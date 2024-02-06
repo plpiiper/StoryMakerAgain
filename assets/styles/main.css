@@ -1,0 +1,556 @@
+html {
+    width: 100%; height: 100%;
+    overflow-x: hidden;
+}
+#content {
+    width: 100%; height: 100%;
+}
+body {
+    margin: 0; padding: 0;
+    font-size: var(--fsMain);
+    width: 100%; height: 100%;
+}
+div, input, span, select, img, a, button, tr, td, button, textarea {
+    position: relative; box-sizing: border-box;
+    font-size: var(--fsMain); font-family: var(--ffT2);
+    transition: 0.2s; outline: none; border: none;
+    background-color: transparent;
+}
+#bcPreview input::-webkit-inner-spin-button {
+    -webkit-appearance: none; margin: 0;
+}
+textarea {transition: 0s !important;}
+.SVGD {
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+}
+body .icon {
+    display: flex;
+    justify-content: center; align-items: center;
+    cursor: pointer; transition: 0.2s;
+    width: fit-content;
+    user-select: none;
+}
+.iconDiv {
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+}
+.iconDiv > div {
+    width: 100%; text-align: center; font-size: 0.8em;
+}
+.iconButtonDiv {
+    display: flex; flex-direction: column;
+    margin: 0 0.25em; align-items: center; justify-content: center;
+}
+.iconButton {padding: 0; border-radius: 50%;  width: fit-content;}
+.iconButton:hover {background-color: rgba(var(--c1B)); cursor: pointer;}
+.iconButtonDiv > div:last-child {text-align: center; width: max-content;}
+.no-underline {
+    text-decoration: none;
+    color: inherit;
+}
+
+
+.hiddenScroll::-webkit-scrollbar, .hiddenScroll div::-webkit-scrollbar {width: 0 !important; height: 0 !important;}
+
+.coverDiv {
+    width: 100vw; height: 100vh; position: fixed; background-color: rgba(0,0,0,0.4); top: 0; left: 0;z-index: 5;
+    display: flex; justify-content: center; align-items: center;
+}
+
+
+:root {
+    --fsMain: 18px;
+    --fsH1: calc(var(--fsMain)*5);
+    --fsHPBtn: calc(var(--fsMain)*2);
+    --fsTBig: calc(var(--fsMain)*1.35);
+    --fsInpText: calc(var(--fsMain)*0.75);
+
+
+    --ffH: 'Oranienbaum', serif;
+    --ffT1: 'Cairo', sans-serif;
+    --ffT2: 'Smooch Sans', sans-serif;
+    --ffT3: 'Noto Sans', sans-serif;
+
+
+    --bgMain: 255,255,255;
+    --cHighlight: #5B397B
+}
+
+
+.link {text-decoration: none; color: inherit;}
+
+/* MAIN MODULES */
+.moduleContainer .cDropdown {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+}
+.moduleContainer .cDropdown .dpTop {
+    display: flex;
+    padding: 0.5rem 0.25rem;
+    overflow: auto;
+    border: 2px solid black;
+
+    width: 100%;
+    min-height: 2.75rem;
+}
+.moduleContainer .cDropdown .dpTop .dpOption {
+    display: flex;
+    padding: 0.25rem 0.5rem;
+    background-color: white;
+    align-items: center;
+    margin: 0.1rem;
+} .moduleContainer .dpOption:hover {
+    cursor: pointer;
+}
+.moduleContainer .cDropdown .dpTop:has(.dpBtn) .dpOption {
+    border: 1px solid black;
+     width: fit-content;
+     border-radius: 1rem;
+}
+
+.moduleContainer .cDropdown .dpTop .dpSelected {
+    width: 100%;
+    align-items: center;
+    margin-right: 0.5rem;
+    display: flex; flex-wrap: wrap;
+}
+.moduleContainer .cDropdown .dpTop .moduleContainer {
+    width: 100%;
+    border-bottom: 2px solid black;
+}
+    .moduleContainer .cInput {
+        width: 100%;
+        height: 100%;
+        font: inherit;
+        color: inherit;
+    }
+
+
+.cDropdown .dpBot {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid white;
+    border-top: none;
+    position: absolute;
+    top: 100%;
+    width: 100%;
+
+    max-height: 0px; /* CHANGE THIS */
+    overflow-y: auto;
+    align-items: center;
+}
+.cDropdown:hover .dpBot:not(:empty) {
+    max-height: 300px;
+    border-color: black;
+    border-top: none;
+    background-color: white;
+    z-index: 4;
+}
+.cDropdown .dpBot .dpOption:first-child {
+    margin: 0;
+}
+.cDropdown .dpBot .dpOption {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0.2rem 0;
+    padding: 0.3rem 0;
+    border-radius: 2px;
+    width: 100%;
+} .dpOption:hover {
+    cursor: pointer;
+    background-color: #dadada;
+}
+
+
+.cCheck {
+    width: 2rem;
+    height: 2rem;
+    margin: 0.25rem;
+}
+.cCheck .cCheckOuter, .cCheck .cCheckInner {
+    border-width: 2px;
+    border-style: solid;
+
+    display: flex;
+    align-items: center; justify-content: center;
+
+    width: 100%;
+    height: 100%;
+}
+.cCheck .cCheckInner {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/* HOME PAGE */
+#homePage {
+    width: 100%; height: 100%;
+    background-color: rgba(var(--bgMain),1);
+
+    display: flex;
+}
+
+#homepage-title {
+    font-size: 7rem;
+    line-height: 1;
+    margin: 3rem 2rem;
+    font-family: var(--ffH);
+    font-weight: lighter;
+}
+
+#homepage-options {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    margin: 1rem 2rem;
+
+    display: flex;
+    flex-direction: column;
+}
+#homepage-options span {
+    font-size: 3.5rem;
+    line-height: 1;
+    margin: 2rem;
+    text-align: right;
+}
+    #homepage-options span:hover {
+        cursor: pointer;
+        text-decoration: underline;
+    }
+
+#homepage-links {
+    position: absolute;
+    left: 0; bottom: 0;
+    margin: 0.5rem;
+}
+#homepage-links a {
+    color: inherit;
+    text-decoration: none;
+} #homepage-links a:hover {
+    cursor: pointer;
+    color: var(--cHighlight);
+}
+#homepage-links .icon {
+    font-size: 2.25rem;
+}
+
+
+
+/* STORYMANAGER */
+#storyManager {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    top: 0;
+    display: flex;
+}
+#storyManager > .left {
+    width: 20%;
+    height: 100%;
+    display: flex; flex-direction: column;
+    border-right: 4px solid black;
+}
+#storyManager > .left > .smList {
+    height: 100%;
+}
+#storyManager > .left > .smMenu {
+    border-top: 4px solid black;
+    display: flex;
+    justify-content: right;
+    padding: 0.5rem 1rem;
+}
+#storyManager > .right {
+    width: 80%;
+    padding: 1rem 2rem;
+}
+#smStoryName {
+    margin: 0 0 1rem;
+    text-align: center;
+    font-size: 3rem;
+}
+
+
+.smStoryDiv {
+    width: 100%;
+    border-bottom: 2px solid black;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    font-size: 2rem;
+} .smStoryDiv:hover {cursor: pointer;}
+.selectedElem {
+    background-color: grey;
+}
+
+.smBtnGroupRow {
+    width: 100%;
+    padding: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.smBtnGroupBtn {
+    width: 300px;
+    height: 300px;
+    border-radius: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    background-color: white;
+    border: 3px solid black;
+    margin: 0 25px;
+}
+.smBtnGroupBtn .icon {
+    font-size: 200px;
+    margin: 0; padding: 0;
+    font-weight: lighter;
+}
+.smBtnGroupBtn .smBtnGroupTx {
+    font-size: 1.75rem;
+    position: absolute;
+    bottom: 1rem;
+}
+
+
+
+/* BLUEPRINT */
+#blueprintDiv {
+    width: 100%;
+    height: 100%;
+
+    position: absolute;
+    left: 0; top: 0;
+
+    background-color: white;
+
+    display: flex;
+}
+#blueprintDiv > .left {
+    width: 300px;
+    border-right: 2px solid black;
+    display: flex; flex-direction: column;
+}
+#blueprintList {
+    width: 100%;
+    height: 100%;
+}
+
+.bpItemDiv {
+    width: 100%;
+    border-bottom: 2px solid black;
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 0.75rem;
+}
+    .bpItemDiv .icon {
+        font-weight: lighter;
+        font-size: 2rem;
+        margin-right: 1rem;
+    }
+    .bpItemDiv input {
+        width: 100%;
+        font-size: 1.5rem;
+        background-color: transparent;
+    }
+
+#blueprintMenu {
+    height: 60px;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    border-top: 3px solid black;
+    padding-right: 0.75rem;
+}
+
+.optionHoverDiv {
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    border: 2px solid black;
+
+    width: 100%;
+}
+#blueprintMenu .optionHoverDiv {
+    position: absolute;
+    bottom: 105%;
+    right: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: 0.2s;
+    border-radius: 1rem 1rem 0 0;
+    border-color: white;
+    padding: 0 0.5rem;
+}
+#blueprintMenu:hover .optionHoverDiv {
+    max-height: 400px;
+    overflow: auto;
+    padding: 1rem 0.5rem;
+    border-color: black;
+}
+
+.optionHoverTitle {
+    text-align: center;
+    font-weight: bolder;
+    font-size: 1.77rem;
+}
+.optionHoverBtn {
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+}
+.optionHoverBtn > span {
+    margin-left: 1rem;
+}
+.optionHoverBtn:hover {
+    color: darkorange;
+    cursor: pointer;
+}
+.optionHoverBtn .icon {
+    font-size: 2.66rem;
+    font-weight: lighter;
+}
+.optionHoverBtn .optionHoverBtnText {
+    font-size: 1.33rem;
+}
+
+
+
+
+
+#blueprintDiv > .right {
+    width: calc(100% - 300px);
+    padding: 1rem;
+    display: flex; flex-direction: column;
+}
+
+
+
+
+
+
+
+/* POPUPS */
+
+.largePopupDiv {
+    width: 720px;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    background-color: white;
+    padding: 1rem 4rem;
+
+    display: flex; flex-direction: column;
+
+    overflow: auto;
+}
+.largePopupDiv.left {
+    left: 0;
+    border-radius: 0 1rem 1rem 0;
+}
+.largePopupDiv.right {
+    right: 0;
+    border-radius: 1rem 0 0 1rem;
+}
+
+.lpHeader {
+    text-align: center;
+    margin: 0;
+    font-size: 3.5rem;
+    font-weight: lighter;
+}
+.lpExit {
+    text-align: center;
+    font-size: 2rem;
+} .lpExit:hover {cursor: pointer; text-decoration: underline;}
+.lpBody {
+    height: 100%;
+    overflow: auto;
+}
+
+
+.lpModifierGroup {
+    display: flex;
+    margin: 0.75rem 0.25rem;
+    align-items: center;
+}
+.lpModifierGroupBtn {
+    font-size: 1.25rem;
+    border: 2px solid black;
+    border-radius: 2rem;
+    padding: 1rem 3.25rem;
+    margin-right: 0.75rem;
+} .lpModifierGroupBtn:hover {cursor: pointer;}
+.lpModifierGroupText {
+    font-size: 1.25rem;
+}
+
+
+.bpmpTitle {
+    font-size: 2.22rem;
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+
+    text-align: center;
+    margin: 1rem; line-height: 1;
+    font-weight: lighter;
+}
+
+.bpmpList {
+    overflow: auto;
+    height: 100%;
+}
+.bpModifierDiv {
+    background-color: white;
+    border: 2px solid black;
+
+    margin: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+}
+    .bpModifierDiv .top, .bpModifierDiv .bot {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.25rem;
+    }
+
+.bpmdTitle {
+    font-size: 1.75rem;
+    margin-right: 0.5rem;
+    width: calc(100% - 3rem);
+    cursor: pointer;
+}
+.bpModifierDiv > div > .moduleContainer {
+    font-size: 1.33rem;
+    margin-right: 1rem;
+    height: 100%;
+    border-bottom: 2px solid black;
+    display: flex;
+    width: 100%;
+}
+.bpModifierDiv > div > .moduleContainer .cDropdown {
+    width: 100%;
+}
+.bpmdDesc {
+    font-size: 1rem;
+    min-width: 20%;
+}
