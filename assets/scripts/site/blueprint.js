@@ -13,8 +13,10 @@ function createBlueprintDiv(parent,obj){
             return randomID(lis.list())
         }
         lis.addItem = function(obj){
+            let d = div.getData();
+            d.blueprint.push(obj);
+            div.saveData(d);
             lis.appendChild(bpItemDiv(obj))
-            div.saveList()
             div.preview()
         }
 

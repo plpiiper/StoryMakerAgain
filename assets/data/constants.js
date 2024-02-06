@@ -339,7 +339,7 @@ const blueprintOptions = [
     "add",
     {icon: "text_format", text: "Text", f: function(){
             let m = { name: "Text", type: "Text",
-                id: randomID(pd("blueprintDiv").left.list()),
+                id: randomID(pd("blueprintDiv").list()),
                 modifiers: [
                     {affect: "innerText", value: "Text Here"}
                 ],
@@ -351,7 +351,7 @@ const blueprintOptions = [
         }},
     {icon: "folder", text: "Group", f: function(){
             let m = { name: "Group", type: "Group",
-                id: randomID(pd("blueprintDiv").left.list()),
+                id: randomID(pd("blueprintDiv").list()),
                 modifiers: [
                 ],
                 styles: [
@@ -361,6 +361,22 @@ const blueprintOptions = [
             pd("blueprintDiv").left.addItem(m)
         }},
     {icon: "extension", text: "Module", f: function(){
-            console.log("add_module")
+            let m = {
+                name: "Module", type: "Module",
+                id: randomID(pd("blueprintDiv").list()),
+                modifiers: [
+                    {affect: "moduleType", value: "Input"},
+                    {affect: "type", value: "Text"}
+                ],
+                styles: [
+                    {affect: "width", value: "100%"},
+                    {affect: "padding", value: "0.5rem 1rem"},
+                    {affect: "fontSize", value: "1rem"},
+                    {affect: "borderThickness", value: "2px"},
+                    {affect: "borderStyle", value: "solid"},
+                    {affect: "borderColor", value: "green"}
+                ]
+            }
+            pd("blueprintDiv").left.addItem(m)
         }}
 ]
