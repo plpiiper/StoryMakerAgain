@@ -411,7 +411,7 @@ body .icon {
 }
 
 
-#dragSelectedItem > span {
+#dragSelectedItem > span:first-child {
     background-color: black;
     color: white;
     border-radius: 2rem;

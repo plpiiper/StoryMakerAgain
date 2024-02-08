@@ -151,7 +151,7 @@ function bpItemDiv(obj){
         DRAGGING AND DROPPING
 
      */
-     div.draggable = true;
+     icon.draggable = true;
      div.ondragstart = modDragStart;
 
     // DRAG/DROP functions
