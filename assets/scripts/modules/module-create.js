@@ -12,7 +12,7 @@ LIST
 
  */
  function cInput(obj){
-let e = cre("div","moduleContainer");
+let e = cContainer()
 if (obj.id){e.dataset.id = obj.id}
 
     let inp = append(cre("input"),e)
@@ -30,6 +30,11 @@ if (obj.id){e.dataset.id = obj.id}
         inp.addEventListener(type,f)
     }; e.setFunction = inp.setFunction;
 
+     inp.setInsetText = e.setInsetText;
+     inp.setInsetPos = e.setInsetPos;
+     inp.setInsetPosVertical = e.setInsetPosVertical;
+     inp.setInsetPosHorizontal = e.setInsetPosHorizontal;
+
     // STYLE
      setModuleOptions(inp,obj)
     return e
@@ -38,7 +43,7 @@ if (obj.id){e.dataset.id = obj.id}
 
 
  function cDropdown(obj){
-let div = cre("div","moduleContainer");
+let div = cContainer();
 if (obj.id){div.dataset.id = obj.id}
 
         let dp = append(cre("div","cDropdown"), div);
@@ -46,7 +51,7 @@ if (obj.id){div.dataset.id = obj.id}
     let top = append(cre("div","dpTop"), dp);
         let slct = append(cre("div","dpSelected"), top);
         // console.log(obj)
-        let allow = obj.modifiers.find(x => x.affect === "dataset-allow");
+        let allow = obj.modifiers.find(x => x.affect === "allow");
         if (allow){
             let inp = append(cInput({
                 type: "Module", styles: [],
@@ -140,10 +145,16 @@ div.pickOption = function(name){
     }
 }
 
+     dp.setInsetText = div.setInsetText;
+     dp.setInsetPos = div.setInsetPos;
+     dp.setInsetPosVertical = div.setInsetPosVertical;
+     dp.setInsetPosHorizontal = div.setInsetPosHorizontal;
+     dp.pickOption = div.pickOption;
+
 
 // if (obj.defaultValue){    div.pickOption(obj.defaultValue)   }
 /* Modifiers/Styles ADD */
-setModuleOptions(div,obj)
+setModuleOptions(dp,obj)
 
 return div
 }
@@ -238,24 +249,42 @@ function cText(obj){
 function cGroup(obj){
     let div = cre("div","cGroup");
         div.dataset.id = obj.id;
-        console.log(obj)
     div.setAlignment = function(value){
-        console.log("WAH--center,top,bot")
+        div.style.justifyContent = value;
     }
     div.setArrangement = function(value){
-        console.log("row,column")
-    }
-    div.toggle = function(state){
-
-    }
-    div.close = function(){
-
-    }
-    div.open = function(){
-
+        div.style.display = "flex";
+        div.style.flexDirection = value;
     }
 
-    // DRAG/DROP functions
+    setModuleOptions(div,obj)
+    return div
+}
+
+function cContainer(){
+    let div = cre("div","moduleContainer");
+    div.setInsetText = function(value){
+        it.innerText = value;
+    }
+    div.setInsetPos = function(value){
+        if (value === "Top"){
+            it.classList.remove("bot");
+            it.classList.add("top");
+        } else if (value === "Bottom"){
+            it.classList.remove("top");
+            it.classList.add("bot");
+        } else {return}
+    }
+    div.setInsetPosHorizontal = function(value) {
+        it.style.marginLeft = value
+    }
+    div.setInsetPosVertical = function(value) {
+        if (it.classList.contains("top")){
+            it.style.marginTop = value;
+        } else {it.style.marginBottom = value;}
+    }
+    let it = cre("span","mcInsetText");
+        div.appendChild(it);
 
     return div
 }

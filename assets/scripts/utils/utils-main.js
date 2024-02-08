@@ -43,28 +43,22 @@ function append(elem,parent){
     return elem;
 }
 
-function deleteItem(pID,iID,list,parentKey){
-    let ids = [pID,iID]; var array = []
-    if (ids.includes("MAIN")){
-        for (var i=0; i<list.length; i++){  if (list[i].id !== ids[1]) {array.push(list[i])} }
-        list = array;
+function delete_item(id,list,parentKey){
+    let ind = get_index("id",id,list,parentKey);
+    if (ind.length === 1){
+        return list.filter(x => x.id !== id);
+    } else {
+        let p = get_item(ind.slice(0,-1),list,parentKey)
+        p[parentKey] = p[parentKey].filter(x => x.id !== id);
+        return list
     }
-    else{
-        let parent_id_loc = get_index("id",ids[0],list,parentKey)
-        let parent_insides = get_insides(parent_id_loc,list,parentKey)
-        let array = parent_insides.filter(x => x.id !== ids[1]);
-        let parent = get_item(parent_id_loc,list,parentKey);
-        parent.items = array
-    }
-
-    return list
 }
 function addItem(pID,obj,list,parentKey){ //parent id, note id
-    let m = list; let ids = [pID,obj];
-    if (ids.includes("MAIN")){m.push(ids[1]); return m}
+    let m = list;
+    if (typeof pID !== "string"){m.push(obj); return m;}
     let addLoc = get_index("id",pID,m,parentKey);
     let addObj = get_item(addLoc,m,parentKey);
-    addObj.items.push(ids[1]);
+    addObj.items.push(obj);
     return m
 }
 function insertItemAfter(index,pLoc,obj,list,parentKey){
@@ -151,3 +145,5 @@ function save_item(id,newObj,list,parentKey){
 function getItemFromList(id,list){
     return get_item(get_index("id",id,list,"items"),list,"items")
 }
+
+

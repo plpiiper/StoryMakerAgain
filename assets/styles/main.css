@@ -86,6 +86,7 @@ body .icon {
     display: flex;
     flex-wrap: wrap;
     width: 100%;
+    font: inherit;
 }
 .moduleContainer .cDropdown .dpTop {
     display: flex;
@@ -95,6 +96,7 @@ body .icon {
 
     width: 100%;
     min-height: 2.75rem;
+    font: inherit;
 }
 .moduleContainer .cDropdown .dpTop .dpOption {
     display: flex;
@@ -102,6 +104,7 @@ body .icon {
     background-color: white;
     align-items: center;
     margin: 0.1rem;
+    font: inherit;
 } .moduleContainer .dpOption:hover {
     cursor: pointer;
 }
@@ -109,6 +112,7 @@ body .icon {
     border: 1px solid black;
      width: fit-content;
      border-radius: 1rem;
+    font: inherit;
 }
 
 .moduleContainer .cDropdown .dpTop .dpSelected {
@@ -116,10 +120,12 @@ body .icon {
     align-items: center;
     margin-right: 0.5rem;
     display: flex; flex-wrap: wrap;
+    font: inherit;
 }
 .moduleContainer .cDropdown .dpTop .moduleContainer {
     width: 100%;
     border-bottom: 2px solid black;
+    font: inherit;
 }
     .moduleContainer .cInput {
         width: 100%;
@@ -132,7 +138,7 @@ body .icon {
 .cDropdown .dpBot {
     display: flex;
     flex-direction: column;
-    border: 2px solid white;
+    border: 2px solid rgba(0,0,0,0);
     border-top: none;
     position: absolute;
     top: 100%;
@@ -141,6 +147,7 @@ body .icon {
     max-height: 0px; /* CHANGE THIS */
     overflow-y: auto;
     align-items: center;
+    font: inherit;
 }
 .cDropdown:hover .dpBot:not(:empty) {
     max-height: 300px;
@@ -160,6 +167,7 @@ body .icon {
     padding: 0.3rem 0;
     border-radius: 2px;
     width: 100%;
+    font: inherit;
 } .dpOption:hover {
     cursor: pointer;
     background-color: #dadada;
@@ -354,8 +362,11 @@ body .icon {
 }
 
 .bpItemDiv {
-    width: 100%;
-    border-bottom: 2px solid black;
+    width: calc(100% - 1rem);
+    border: 2px solid black;
+    border-radius: 0.5rem;
+    margin: 0.5rem;
+
     display: flex;
     align-items: center;
     padding: 0.75rem 0.75rem;
@@ -364,12 +375,49 @@ body .icon {
         font-weight: lighter;
         font-size: 2rem;
         margin-right: 1rem;
+        padding: 0.25rem;
     }
     .bpItemDiv input {
         width: 100%;
         font-size: 1.5rem;
         background-color: transparent;
     }
+    .bpItemName {
+        width: 100%;
+    }
+    .bpItemName:hover {
+        cursor: pointer;
+        text-decoration: underline;
+    }
+
+
+.bpItemDivBody {
+    border: 2px solid black;
+    border-top: none;
+    border-radius: 0 0 0.75rem 0.75rem;
+    padding-bottom: 1rem;
+
+    margin: 0.5rem;
+}
+.bpItemDivBody > .bpItemDiv {
+    width: calc(100% - 8px);
+    margin: 0.5rem 4px;
+    border: none;
+    border-bottom: 2px solid black;
+    border-radius: 0;
+}
+.bpItemDivBody > .bpItemDiv:first-child {
+    margin-top: 0;
+}
+
+
+#dragSelectedItem > span {
+    background-color: black;
+    color: white;
+    border-radius: 2rem;
+}
+
+
 
 #blueprintMenu {
     height: 60px;
@@ -554,3 +602,21 @@ body .icon {
     font-size: 1rem;
     min-width: 20%;
 }
+
+
+
+.moduleContainer .mcInsetText {
+    position: absolute;
+    z-index: 2;
+    left: 0.6em;
+    font: inherit;
+    font-size: 0.8em;
+}
+.mcInsetText.top {
+    top: 0.2em;
+}
+.mcInsetText.bot {
+    bottom: 0.2em;
+}
+
+

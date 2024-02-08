@@ -10,7 +10,18 @@ const modList = {
         f: "cText"
     },
     Group: {
-        icon: "folder"
+        icon: "folder",
+        modifiers: [
+            {
+                affect: "itemAlignment",
+                funcName: "setAlignment"
+            },
+            {
+                affect: "itemArrangement",
+                funcName: "setArrangement"
+            }
+        ],
+        f: "cGroup"
     },
     Module: {
         icon: "extension",
@@ -24,6 +35,22 @@ const modList = {
                     {
                         affect: "defaultValue",
                         funcName: "pickOption"
+                    },
+                    {
+                        affect: "textInsetPosition",
+                        funcName: "setInsetPos"
+                    },
+                    {
+                        affect: "textInsetText",
+                        funcName: "setInsetText"
+                    },
+                    {
+                        affect: "textInsetMarginVertical",
+                        funcName: "setInsetPosVertical"
+                    },
+                    {
+                        affect: "textInsetMarginHorizontal",
+                        funcName: "setInsetPosHorizontal"
                     }
                 ],
                 f: "cDropdown"
@@ -33,6 +60,22 @@ const modList = {
                     {
                         affect: "defaultValue",
                         funcName: "setValue"
+                    },
+                    {
+                        affect: "textInsetPosition",
+                        funcName: "setInsetPos"
+                    },
+                    {
+                        affect: "textInsetText",
+                        funcName: "setInsetText"
+                    },
+                    {
+                        affect: "textInsetMarginVertical",
+                        funcName: "setInsetPosVertical"
+                    },
+                    {
+                        affect: "textInsetMarginHorizontal",
+                        funcName: "setInsetPosHorizontal"
                     }
                 ],
                 f: "cInput"
@@ -78,8 +121,9 @@ const modifiersList = [
         text: "Change the maximum number the input can be inputted.",
         type: "Module",
         modifiers: [
-            {   affect: "moduleType", value: "Input"    },
-            {   affect: "type", value: "Number"    }
+            {   affect: "options", value: ["Text","Number","Range"]  },
+            {   affect: "defaultValue", value: "Text"  },
+            {   affect: "moduleType", value: "Dropdown"    }
         ]
     },
     {
@@ -119,7 +163,7 @@ const modifiersList = [
     },
     {
         main: "Dropdown",
-        affect: "dataset-allow",
+        affect: "allow",
         title: "Allow Input",
         text: "Allow user to input their own options.",
         type: "Module",
@@ -139,7 +183,7 @@ const modifiersList = [
         type: "Module",
         modifiers: [
             {   affect: "moduleType", value: "Dropdown"    },
-            {   affect: "dataset-allow", value: true    }
+            {   affect: "allow", value: true    }
         ]
     },
     {
@@ -154,8 +198,9 @@ const modifiersList = [
         ]
     },
     {
-        main: "Input",
-        affect: "dataset-textInsetPosition",
+        main: "Module",
+        sub: ["Input","Dropdown"],
+        affect: "textInsetPosition",
         title: "Inset Text Position",
         text: "Have text inside area?",
         type: "Module",
@@ -165,8 +210,9 @@ const modifiersList = [
         ]
     },
     {
-        main: "Input",
-        affect: "dataset-textInsetText",
+        main: "Module",
+        sub: ["Input","Dropdown"],
+        affect: "textInsetText",
         title: "Inset Text",
         text: "Have text inside area?",
         type: "Module",
@@ -176,8 +222,32 @@ const modifiersList = [
         ]
     },
     {
+        main: "Module",
+        sub: ["Input","Dropdown"],
+        affect: "textInsetMarginVertical",
+        title: "Inset Text Vertical Margin",
+        text: "Shift the position of the inset text vertically from its position.",
+        type: "Module",
+        modifiers: [
+            {   affect: "moduleType", value: "Input"    },
+            {   affect: "type", value: "Text"    }
+        ]
+    },
+    {
+        main: "Module",
+        sub: ["Input","Dropdown"],
+        affect: "textInsetMarginHorizontal",
+        title: "Inset Text Horizontal Margin",
+        text: "Shift the position of the inset text horizontally from its position.",
+        type: "Module",
+        modifiers: [
+            {   affect: "moduleType", value: "Input"    },
+            {   affect: "type", value: "Text"    }
+        ]
+    },
+    {
         main: "Group",
-        affect: "dataset-itemArrangement",
+        affect: "itemArrangement",
         title: "Item Arrangement",
         text: "Arrange this here...",
         type: "Module",
@@ -191,15 +261,16 @@ const modifiersList = [
     },
     {
         main: "Group",
-        affect: "dataset-itemAlignment",
+        affect: "itemAlignment",
         title: "Item Alignment",
         text: "Align this here...",
         type: "Module",
         modifiers: [
             {   affect: "moduleType", value: "Dropdown"    },
             {affect: "options", value: [
-                    {name: "Row", value: "row"},
-                    {name: "Column", value: "column"}
+                    {name: "Left", value: "left"},
+                    {name: "Center", value: "center"},
+                    {name: "Right", value: "right"}
                 ]}
         ]
     }
@@ -319,6 +390,18 @@ const stylesList = [
         affect: "borderColor",
         title: "Border Color",
         text: "Change the border color (set with border type and width)",
+        type: "Module",
+        modifiers: [
+            {   affect: "moduleType", value: "Input"    },
+            {   affect: "type", value: "Text"    },
+            {affect: "placeholder", value: "Valid Measurements: 'px' 'em' 'rem'"}
+        ]
+    },
+    {
+        main: ["All"],
+        affect: "borderRadius",
+        title: "Roundness",
+        text: "Change the roundness of the edges (most visible with Border)",
         type: "Module",
         modifiers: [
             {   affect: "moduleType", value: "Input"    },

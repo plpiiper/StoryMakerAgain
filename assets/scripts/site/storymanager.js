@@ -48,7 +48,10 @@ div.changeStory = function(id){
     st = id;
 }
 div.openMenuItem = function(name){
-    console.log(name)
+    if (!div.selectedStory()){return}
+    if (name === "blueprint"){
+        createBlueprintDiv("content",storyList.find(x => x.id === div.selectedStory()))
+    }
 }
 div.exit = function(){
     div.remove();

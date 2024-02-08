@@ -7,6 +7,7 @@ function createBlueprintDiv(parent,obj){
     let l = append(cre("div","left"),div);
         let lis = append(cre("div"),l); lis.id = "blueprintList";
         lis.refresh = function() {
+            removeChildren(lis)
             addArrayChildren(lis,bpItemDiv,div.getData().blueprint)
         }
         lis.generateID = function(){
@@ -30,19 +31,24 @@ function createBlueprintDiv(parent,obj){
             removeChildren(r);
             r.addItem(div.list())
         }
-        r.addItem = function(itemObj){
+        r.addItem = function(itemObj,p){
+
             if (Array.isArray(itemObj)){for (var i=0;i<itemObj.length;i++){r.addItem(itemObj[i])}; return}
 
             if (itemObj.type === "Module"){
                 let type = findOption(itemObj,'modifiers','affect','moduleType');
                 if (type){
-                    let elem = window[modList.Module.types[type.value].f](itemObj);
-                    r.appendChild(elem)
+                     append(window[modList.Module.types[type.value].f](itemObj),p ? p : r);
                 }
             } else if (itemObj.type === "Text"){
-                let elem = window[modList.Text.f](itemObj);
-                r.appendChild(elem)
+                    append(window[modList.Text.f](itemObj),p ? p : r);
             } else if (itemObj.type === "Group"){
+                    let elem = append(window[modList.Group.f](itemObj),p ? p : r);
+                if (itemObj.items){
+                    for (var i=0;i<itemObj.items.length;i++){
+                        r.addItem(itemObj.items[i],elem)
+                    };
+                }
 
             } else {return "Err"}
         }
@@ -58,9 +64,9 @@ function createBlueprintDiv(parent,obj){
     div.saveData = function(obj){
         div.dataset.data = JSON.stringify(obj);
     }
-    div.refresh = function(obj,id){
-        div.saveData(obj);
-        lis.refresh(id)
+    div.refresh = function(array){
+        if (array){div.saveList(array);}
+        lis.refresh()
         r.refresh();
     }
     div.saveList = function(array){
@@ -83,15 +89,18 @@ function createBlueprintDiv(parent,obj){
     div.goTo = function(index){
         if (!index){return -1}
         if (index.length === 1){return Array.from(lis.childNodes)[index[0]]}
-        let p = lis.childNodes;
+        let p = lis;
         for (var i=0; i<index.length; i++){
-            p = lis.childNodes[index[i]];
-            if (p.getItem().type === "Group"){
-                if (i === index-1){return p}
+            if (p.classList.contains("bpItemDiv") && p.getItem && p.getItem().type === "Group"){
                 p.open();
-                }
-            else {return p}
+                p = p.nextElementSibling;
+            } else {
+                p = p.childNodes[index[i]];
+                if (p !== undefined && index.length-1 === i && p.getItem && p.getItem().type === "Group"){p.open()}
+            }
+            // FIX THIS SOMEHOW???
         }
+        return p
     }
     div.list = function(){
         return div.getData().blueprint;
@@ -104,23 +113,30 @@ function createBlueprintDiv(parent,obj){
     div.right = r;
     div.left = lis;
     lis.refresh()
+
+
+    div.ondragover = function(event){event.preventDefault();}
+    div.ondrop = modDragDrop;
+
+
     return div
 }
 
 function bpItemDiv(obj){
     let div = cre("div","bpItemDiv");
-        append(ic(modList[obj.type].icon),div);
-        let input = append(cre("input","bpItemName"),div);
-            input.value = obj.name;
-            input.oninput = function(){
-                let it = div.getItem();
-                    it.name = input.value;
-                div.refreshItem(it,obj.id)
-            }
+        let icon = ic(modList[obj.type].icon);
+            append(icon,div);
+        let name = append(cre("span","bpItemName"),div);
+            name.innerText = obj.name;
 
-    // if folder
-    input.onclick = function(){
-        selectElem("selectedItem",div)
+    div.getID = function(){return obj.id}
+    div.getItem = function(){
+        return getItemFromList(div.getID(),pd("blueprintDiv").list())
+    }
+    div.refreshName = function(){
+        name.innerText = div.getItem().name
+    }
+    name.onclick = function(){
         let ppd = popupcontainer("content","popupModuleSettings");
         if (ppd){
             ppd.saveData(obj.id);
@@ -130,13 +146,50 @@ function bpItemDiv(obj){
     }
 
 
-    div.getID = function(){return obj.id}
-    div.getItem = function(){
-        return getItemFromList(div.getID(),pd("blueprintDiv").list())
+    /*
+
+        DRAGGING AND DROPPING
+
+     */
+     div.draggable = true;
+     div.ondragstart = modDragStart;
+
+    // DRAG/DROP functions
+    div.ondrop = modDragDrop;
+
+if (obj.type === "Group"){
+    div.ondragover = function(event){event.preventDefault();}
+
+    div.ondblclick = function(){
+        if (div.isOpen){
+            div.isOpen() ? div.close() : div.open()
+        }
+    }
+    div.open = function(){
+        if (div.nextElementSibling === null || !div.nextElementSibling.classList.contains("bpItemBodyDiv")) {
+            let body = cre("div", "bpItemDivBody");
+            div.after(body);
+                body.getItem = div.getItem;
+                for (var i=0;i<obj.items.length;i++){
+                    append(bpItemDiv(obj.items[i]),body);
+                }
+            body.getID = div.getID;
+            body.getItem = div.getItem;
+            body.ondrop = modDragDrop;
+        }
+    }
+    div.close = function(){
+        if (div.isOpen()){div.nextElementSibling.remove()}
+    }
+    div.isOpen = function(){
+        return (div.nextElementSibling && div.nextElementSibling.classList.contains("bpItemDivBody"))
+    }
+}
+
+    div.getIndex = function(){
+        return get_index("id",obj.id,pd("blueprintDiv").list(),"items")
     }
 
-
-    div.dataset.data = JSON.stringify(obj);
     return div;
 }
 
@@ -183,6 +236,37 @@ if (type === "bp"){
     // Modifier Options
     let id = div.getData();
     div.rename(main.getItemData(id).type + " Options");
+
+
+    let inp = cInput({
+    "name": "Module", "type": "Module",
+    "modifiers": [
+        {   "affect": "moduleType", "value": "Input"  },
+        {   "affect": "type",   "value": "Text" },
+        {   "affect": "textInsetText",  "value": "Name" },
+        {   "affect": "textInsetPosition",  "value": "Bottom" },
+        {   "affect": "textInsetMarginHorizontal",  "value": "1rem" },
+        {   "affect": "textInsetMarginVertical",  "value": "2px" }
+    ],
+    "styles": [
+        {   "affect": "width",  "value": "100%"  },
+        {   "affect": "padding", "value": "1rem 2rem"  },
+        {   "affect": "fontSize","value": "1.5rem" },
+        {   "affect": "borderThickness", "value": "2px"  },
+        {   "affect": "borderStyle", "value": "solid"    },
+        {   "affect": "borderColor", "value": "green"     },
+        {   "affect": "borderRadius", "value": "5rem"     }
+    ]
+})
+        inp.setValue(main.getItemData(id).name);
+        inp.setFunction("input",function(){
+            let it = main.getItemData(id)
+            it.name = inp.getValue();
+            main.refreshItem(it,it.id)
+            main.findItem(id).refreshName()
+        })
+    div.body.appendChild(inp)
+
     let cdt = {
         Module: ["popupSelectModuleOptions","bpSelectModule","modifiers"],
         Style: ["popupSelectStyleOptions","bpSelectStyle","styles"]
@@ -219,12 +303,48 @@ function lpGroupBtn(name,f){
 }
 
 
-function lpOptionList(div,optionlist,type,id){
+function getOptionListRecs(optionlist,mod){
+    let types = [];
+    types.push(mod.type);
+    if (mod.type === "Module"){
+        let r = findOption(mod,'modifiers','affect','moduleType');
+        if (r){types.push(r.value);}
+        if (r.value === "Input"){
+            let q = findOption(mod,'modifiers','affect','type');
+            if (q){types.push(q.value);}
+        }
+    }
+
+    function filterFunc(x){
+        if (x.main.includes("All")){return true}
+        if (x.main === types[0]){return true}
+
+        if (types.length === 1){return x.main === types[0]}
+        else if (types.length === 2){
+            return x.main === types[1]
+        } else {
+            if (x.main === types[1]){
+                if (!x.sub){return true}
+                else if (x.sub && x.sub.includes(types[2])){
+                    return true
+                } else {return false}
+            } else {return false}
+        }
+    }
+
+
+
+    return optionlist.filter(x => filterFunc(x))
+}
+
+
+
+function lpOptionList(div,optionList,type,id){
     let data = getItemFromList(div.getData(),pd("blueprintDiv").list());
 
-    let recs = optionlist.filter(x => x.main.includes(data.type) || x.main === "All");
-    if (data.subtype){recs = recs.filter(x => x.sub ? x.sub.includes(data.subtype): false)}
-    let others = optionlist.filter(x => !x.main.includes(data.type) && x.main !== "All");
+    let recs = getOptionListRecs(optionList,data)
+    let others = optionList.filter(x => recs.findIndex(y => y.affect === x.affect) === -1);
+
     // inverse of recs
     let sl = append(cre("div","bpmpList"), div.body);
 
@@ -288,7 +408,7 @@ function bpModifierDiv(mod,obj){
         let inpObj = {
             type: type.value,
             styles: mod.styles ? mod.styles : [],
-            modifiers: mod.modifiers ? mod.modifiers : []
+            modifiers: mod.modifiers ? mod.modifiers.map(x => x) : []
         }
         if (match){addModuleOption(inpObj,"defaultValue",match.value)}
 
