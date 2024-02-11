@@ -735,6 +735,7 @@ body .icon {
 
 .contextMenuDiv {
     position: absolute;
+    z-index: 2;
 
     border: 2px solid black;
     border-radius: 4px;
@@ -752,3 +753,57 @@ body .icon {
         margin-left: 1rem;
     }
 .cmDiv:hover {cursor: pointer; background-color: #efefef;}
+
+
+
+.lpPresetDiv {
+    display: flex;
+    border: 2px solid black;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+}
+.lpPresetName {
+    width: 100%;
+    font-size: 1.5rem;
+    border-bottom: 2px solid black;
+}
+.lpPresetDiv .icon {
+    font-size: 1.75rem;
+    margin-left: 1rem;
+} .lpPresetDiv .icon:hover {color: orange;}
+    .lpPresetDiv .icon:first-child {
+        margin-right: 1rem;
+        margin-left: 0;
+        color: red;
+    }
+
+
+.popupPreviewText {
+    font-size: 1.5rem;
+    text-align: center;
+}
+.popupPreviewBtn {
+    border: 1px solid black;
+    margin: 1rem 0; border-radius: 1rem;
+    padding: 0.25rem 1rem;
+} .popupPreviewBtn:hover {cursor: pointer;}
+
+.previewPresetList {
+    display: flex; flex-wrap: wrap;
+    margin: 2rem 0;
+    padding: 1rem 0.25rem;
+    border: 1px solid black;
+}
+.previewPresetList .popupPreviewText {
+    width: 100%;
+}
+.pplDiv {
+    border: 1px solid black; width: fit-content;
+    border-radius: 1rem;
+    padding: 0.25rem 1rem;
+    margin: 0.2rem 0.5rem;
+}
+.previewPresetPreviewDiv {
+    display: flex;
+    justify-content: center;
+}

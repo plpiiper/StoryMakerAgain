@@ -18,6 +18,7 @@ function createSheetsDiv(parent,obj,type){
     let div = append(cre("div"),p); div.id = ti.id;
     div.classList.add("mainSheetDiv")
     div.exit = function(){div.remove();}
+    div.ti = ti;
     div.dataset.id = obj.id;
 
     let l = append(cre("div","left"),div);
@@ -278,4 +279,53 @@ function itemContextMenu(id){
     document.addEventListener("click",documentEvent)
 
     cm.style.top = (cds.y+10) + "px";
+}
+
+
+function lpPresetList(div,list,id){
+    let data = getItemFromList(div.getData(),mcd().list());
+    div.rename("Preset List")
+    for (var i=0;i<list.length;i++){append(lpPresetDiv(list[i],data.id),div.body)}
+}
+function lpPresetDiv(obj,id){
+let m = cre("div","lpPresetDiv");
+    let del = append(ic("delete"),m); del.onclick = function(){
+        presetList = presetList.filter(x => x.id !== obj.id); saveLS();
+        m.remove()
+    };
+    let nm = append(cre("input","lpPresetName"),m); nm.value = obj.name;
+        nm.onkeyup = function(){
+            presetList[presetList.findIndex(x => x.id === obj.id)].name = nm.value;saveLS()
+        }
+    let prev = append(ic("visibility"),m); prev.onclick = function(){
+        let ppd = popupcontainer("content","popupPresetPreview");
+        if (ppd){   ppd.saveData(obj); popupcontent("presetPreview",ppd); }
+
+    }
+    let mod = append(ic("integration_instructions"),m); mod.onclick = function(){
+        m.changeItem("add","modifiers");
+        toast("Added the item's modifiers")
+    }; mod.oncontextmenu = function(){
+        event.preventDefault(); m.changeItem("rewrite","modifiers");
+        toast("Overwrote the item's modifiers")
+        }
+    let styles = append(ic("format_paint"),m); styles.onclick = function(){
+        m.changeItem("add","styles");
+        toast("Added the item's styles")
+    }; styles.oncontextmenu = function(){
+        event.preventDefault(); m.changeItem("rewrite","styles");
+        toast("Overwrote the item's styles")
+        }
+    m.changeItem = function(type,key){
+        let item = mcd().getItemData(id);
+        if (type === "rewrite"){
+            item[key] = obj[key];
+        } else if (type === "add"){
+        for (var i=0; i<obj[key].length; i++){
+            let mod = obj[key][i]; addModuleOption(item,key,mod.affect,mod.value);
+        } } else {return}
+        mcd().refreshItem(item,item.id)
+    }
+
+return m
 }

@@ -60,3 +60,10 @@ function getModType(mod){
         return arr
     }
 }
+
+
+function getFriendlyName(list,searchKey,searchVal){
+    if (list.find(x => x[searchKey] === searchVal)){
+        return list.find(x => x[searchKey] === searchVal).title
+    } else {return false}
+}

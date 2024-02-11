@@ -76,7 +76,8 @@ if (type === "bp"){
 
     let cdt = {
         Module: ["popupSelectModuleOptions","bpSelectModule","modifiers"],
-        Style: ["popupSelectStyleOptions","bpSelectStyle","styles"]
+        Style: ["popupSelectStyleOptions","bpSelectStyle","styles"],
+        Preset: ["popupSelectPresetOptions","bpSelectPreset","presets"]
     }
     for (key in cdt){
         let c = cdt[key]
@@ -92,27 +93,97 @@ if (type === "bp"){
 }
 else if (type === "bpSelectModule"){
     lpOptionList(div,modifiersList,"modifiers","popupSelectModuleOptions")
-} else if (type === "bpSelectStyle"){
-    lpOptionList(div,stylesList,"styles","popupSelectStyleOptions")
+} else if (type === "bpSelectStyle") {
+    lpOptionList(div, stylesList, "styles", "popupSelectStyleOptions")
+} else if (type === "bpSelectPreset"){
+    let sp = append(cre("div","popupPreviewText"),div.body); sp.innerText = "Preview, Change Modules, Change Styles";
+    let btn = append(cre("button","popupPreviewBtn"),div.body);
+    btn.innerText = "Add Current Item (" + mcd().getItemData(div.getData()).name + ") as a Preset"
+    btn.onclick = function(){
+        let item = mcd().getItemData(div.getData());
+        let preset = {
+            name: item.name, id: randomID(presetList),
+            modifiers: item.modifiers, styles: item.styles
+        }
+        presetList.push(preset);
+        saveLS()
+        div.exit();
+    }
+    lpPresetList(div, presetList, "popupSelectStyleOptions");
+} else if (type === "presetPreview"){
+    div.rename("Preview Preset")
+    let preset = presetList.find(x => x.id === JSON.parse(div.getData()).id);
+    let dp = cDropdown({
+            type: "Module",
+            modifiers: [
+                {affect: "moduleType", value: "Dropdown"},
+                {
+                    affect: "options", value: [
+                        {name: "Blueprint: Input", value: ["Module","Input"]},
+                        {name: "Blueprint: Dropdown", value: ["Module","Dropdown"]},
+                        {name: "Text", value: "Text"},
+                        {name: "Group", value: "Group"},
+                        {name: "Char Sheet: List", value: "List"},
+                        {name: "Char Sheet: Bar", value: "List"}
 
-} else if (type === "sv") {
+                    ]
+                },
+                {affect: "textInsetText", value: "Choose Type"},
+                {affect: "textInsetPosition", value: "Bottom"}
+            ],
+            styles: [
+                {affect: "margin", value: "1rem 0 2rem 0"}
+            ]
+        });
+    div.body.appendChild(dp)
+    dp.setFunction("click",function(){
+        let t = dp.getValue();
+        let tobj = {
+            type: t.includes("Module") ? "Module" : t,
+            modifiers: [],
+            styles: [],
+            items: t === "Group" ? [] : undefined
+        }; if (t.includes("Module")){addModuleOption(tobj,"modifiers","moduleType",JSON.parse(t)[1])}
+        prev.preview(tobj,preset)
+    });
+    let listDiv = append(cre("div","previewPresetList"),div.body);
+        let sm = append(cre("div","popupPreviewText"),listDiv); sm.innerText = "Modifiers";
+        for (var i=0; i<preset.modifiers.length;i++){
+            let p = preset.modifiers[i]; let c = getFriendlyName(modifiersList,"affect",p.affect); if (c) {
+                let pdiv = append(cre("div","pplDiv"),listDiv);
+                pdiv.innerText = modifiersList.find(x => x.affect === p.affect).title + ": " + p.value;
+            }
+        }
+        let st = append(cre("div","popupPreviewText"),listDiv); st.innerText = "Styles";
+        for (var i=0; i<preset.styles.length;i++){
+            let p = preset.styles[i]; let c = getFriendlyName(stylesList,"affect",p.affect); if (c) {
+                let pdiv = append(cre("div","pplDiv"),listDiv);
+                pdiv.innerText = stylesList.find(x => x.affect === p.affect).title + ": " + p.value;
+            }
+        }
+    let prev = append(cre("div","previewPresetPreviewDiv"),div.body);
+        prev.preview = function(selectedObj,presetObj){
+            removeChildren(prev);
+            for (var i=0; i<presetObj.modifiers; i++){  let mod = presetObj.modifiers[i];
+                addModuleOption(selectedObj,"modifiers",mod.affect,mod.value);  }
+            selectedObj.styles = presetObj.styles;
+            append(cCreate(selectedObj),prev);
+        }
+
+}else if (type === "sv") {
     div.rename("Choose Blueprint Module as Value");
-    let id = pd("popupModuleSettings").dataset.data;   let item = main.getItemData(id);
-    let mod = div.modifier;
-        // let modType = findOption(mod,"modifiers","affect","moduleType").value;
-    let search = findOption(item,"modifiers","affect",mod.affect);
+    let item = main.getItemData(pd("popupModuleSettings").dataset.data);
+    let search = findOption(item,"modifiers","affect",div.modifier.affect);
 
-    let lis = main.getModules("blueprint");
-
-    let sp = append(cre("h3","csmpHeader"),div.body); sp.innerHTML = "<strong>Option: </strong>" + mod.title;
+    let sp = append(cre("h3","csmpHeader"),div.body); sp.innerHTML = "<strong>Option: </strong>" + div.modifier.title;
     let lp = append(cre("h3","csmpHeader"),div.body); lp.innerHTML = "<strong>Module Picked:</strong> " + (search.defaultValue ? (getItemFromList(search.defaultValue,mcd().getData().blueprint).name + " (" + search.defaultValue + ")"): "None");
     let clear = append(cre("button","csmpBtn"),div.body); clear.innerText = "Deselect Module";
         clear.onclick = function(){
             div.btn.clear();   div.refreshFunc();   div.exit();
         }
 
-        for (var i=0; i<lis.length; i++){
-            let gm = lis[i];   let m = append(csModPickerDiv(gm),div.body);
+        for (var i=0; i<main.getModules("blueprint").length; i++){
+            let gm = main.getModules("blueprint")[i];   let m = append(csModPickerDiv(gm),div.body);
             m.btn.onclick = function(){
                 div.btn.setValue(gm.id);   div.refreshFunc();   div.exit();
         }}
@@ -138,9 +209,9 @@ function getOptionListRecs(optionlist,mod){
         if (x.main.includes("All")){return true}
         if (x.main === types[0]){return true}
 
-        if (types.length === 1){return x.main === types[0]}
+        if (types.length === 1){return x.main.includes(types[0])}
         else if (types.length === 2){
-            return x.main === types[1]
+            return x.main.includes(types[1])
         } else {
             if (x.main === types[1]){
                 if (!x.sub){return true}
@@ -260,7 +331,7 @@ function bpModifierDiv(mod,obj){
             styles: mod.styles ? mod.styles : [],
             modifiers: mod.modifiers ? mod.modifiers.map(x => x) : []
         }
-        if (match){addModuleOption(inpObj,"defaultValue",match.value)}
+        if (match){addModuleOption(inpObj,"modifiers","defaultValue",match.value)}
 
         if (type.value === "Input"){
             inp = cInput(inpObj);

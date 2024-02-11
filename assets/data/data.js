@@ -278,17 +278,17 @@ var storyList = [
     }
 ];
 
-var presetList = []
-
-var examplePresets = [
-    {
-        name: "Friendly Name",
-        id: "A1234BCD",
+var presetList = [
+    { name: "Friendly Name", id: "A19VD4DE",
         modifiers: [
-            {affect: "max", value: "newValue"},
-            {affect: "style-height", value: "300px"}
+            {affect: "max", value: "5"},
+        ],
+        styles: [
+            {affect: "height", value: "300px"},
+            {affect: "border", value: "2px solid black"}
         ]
     }
-];
+]
+
 
 

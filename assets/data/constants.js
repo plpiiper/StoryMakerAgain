@@ -70,7 +70,7 @@ const modList = {
         icon: "custom_typography",
         modifiers: [
             {
-                affect: "innerText",
+                affect: "textValue",
                 funcName: "setText"
             }
         ],
@@ -314,7 +314,7 @@ const modifiersList = [
         ]
     },
     {
-        main: "Text", affect: "innerText",
+        main: "Text", affect: "textValue",
         title: "Text", text: "The text inside the text element",
         type: "Module",
         modifiers: [
@@ -707,6 +707,7 @@ const blueprintOptions = [
             if (mcd().getData){
             let bp = mcd().getData();
             storyList[storyList.findIndex(x => x.id === bp.id)] = bp;
+            saveLS()
             }
         }},
     {icon: "move_item", text: "Exit (without saving)", f: function(){
@@ -717,7 +718,7 @@ const blueprintOptions = [
             let m = { name: "Text", type: "Text",
                 id: randomID(mcd().list()),
                 modifiers: [
-                    {affect: "innerText", value: "Text Here"}
+                    {affect: "textValue", value: "Text Here"}
                 ],
                 styles: [
                     {affect: "fontSize", value: "32px"}
@@ -761,6 +762,7 @@ const charSheetOptions = [
             if (mcd().getData){
                 let bp = mcd().getData();
                 storyList[storyList.findIndex(x => x.id === bp.id)] = bp;
+                saveLS()
             }
         }},
     {icon: "move_item", text: "Exit (without saving)", f: function(){
@@ -771,7 +773,7 @@ const charSheetOptions = [
             let m = { name: "New Text", type: "Text",
                 id: randomID(mcd().list()),
                 modifiers: [
-                    {affect: "innerText", value: "Text Here"}
+                    {affect: "textValue", value: "Text Here"}
                 ],
                 styles: [
                     {affect: "fontSize", value: "32px"}

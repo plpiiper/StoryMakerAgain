@@ -162,9 +162,21 @@ function setModuleOptions(div,obj){
     }
 }
 
-function addModuleOption(obj,affect,value){
-    let ind = obj.modifiers.findIndex(x => x.affect === affect)
-    if (ind > -1)    {obj.modifiers[ind].value = value;
-    } else {    obj.modifiers.push({affect: affect, value: value}); }
+function addModuleOption(obj,key,affect,value){
+    let ind = obj[key].findIndex(x => x.affect === affect)
+    if (ind > -1)    {obj[key][ind].value = value;
+    } else {    obj[key].push({affect: affect, value: value}); }
     return obj
+}
+
+
+
+function cCreate(obj){
+    if (obj.type === "Module"){
+        let type = findOption(obj,"modifiers","affect","moduleType").value;
+        return window[modList['Module'].types[type].f](obj)
+    }
+    else {
+        return window[modList[obj.type].f](obj)
+    }
 }
