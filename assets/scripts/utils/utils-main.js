@@ -26,6 +26,20 @@ function randomID(list){
     return ri
 }
 
+
+function randomList(list,min,max){
+    let lis = []
+    let loopLen = Math.min(Math.floor((Math.random()) * (max-min))+min,list.length);
+    for (var i=0; i<loopLen;i++){   lis.push(op())   }
+
+    function op(){
+        let o = list[Math.floor((Math.random()) * list.length)]
+            while (lis.includes(o)){o = op()}
+        return o
+    }
+    return lis
+}
+
 function selectElem(id,slct){
     if (id && pd(id) !== null){
         pd(id).classList.remove("selectedElem");
@@ -147,3 +161,17 @@ function getItemFromList(id,list){
 }
 
 
+
+
+function saveLS(){
+    localStorage.storyManagerData = JSON.stringify({
+        storyList: storyList,
+        presetList: presetList
+    });
+}
+function loadLS(){
+    if (localStorage.storyManagerData){
+        let j = JSON.parse(localStorage.storyManagerData);
+        for (key in j){window[key] = j[key]}
+    }
+}

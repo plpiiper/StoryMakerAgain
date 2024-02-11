@@ -1,197 +1,4 @@
-function createBlueprintDiv(parent,obj){
-    let p = pd(parent);
-    let div = append(cre("div"),p); div.id = "blueprintDiv";
-        div.exit = function(){div.remove();}
-        div.dataset.id = obj.id;
 
-    let l = append(cre("div","left"),div);
-        let lis = append(cre("div"),l); lis.id = "blueprintList";
-        lis.refresh = function() {
-            removeChildren(lis)
-            addArrayChildren(lis,bpItemDiv,div.getData().blueprint)
-        }
-        lis.generateID = function(){
-            return randomID(lis.list())
-        }
-        lis.addItem = function(obj){
-            let d = div.getData();
-            d.blueprint.push(obj);
-            div.saveData(d);
-            lis.appendChild(bpItemDiv(obj))
-            div.preview()
-        }
-
-        let lm = append(cre("div"),l); lm.id = "blueprintMenu";
-            let btn = append(cre("div"),lm);
-                append(ic("menu"),btn);
-            let hv = append(createOptionHoverList(blueprintOptions),lm)
-
-    let r = append(cre("div","right"),div);
-        r.refresh = function(){
-            removeChildren(r);
-            r.addItem(div.list())
-        }
-        r.addItem = function(itemObj,p){
-
-            if (Array.isArray(itemObj)){for (var i=0;i<itemObj.length;i++){r.addItem(itemObj[i])}; return}
-
-            if (itemObj.type === "Module"){
-                let type = findOption(itemObj,'modifiers','affect','moduleType');
-                if (type){
-                     append(window[modList.Module.types[type.value].f](itemObj),p ? p : r);
-                }
-            } else if (itemObj.type === "Text"){
-                    append(window[modList.Text.f](itemObj),p ? p : r);
-            } else if (itemObj.type === "Group"){
-                    let elem = append(window[modList.Group.f](itemObj),p ? p : r);
-                if (itemObj.items){
-                    for (var i=0;i<itemObj.items.length;i++){
-                        r.addItem(itemObj.items[i],elem)
-                    };
-                }
-
-            } else {return "Err"}
-        }
-        r.getList = function(){
-            let ml = Array.from(r.childNodes).filter(x => x.classList.contains("moduleContainer")).map(x => x= {id: x.dataset.id, value: x.getValue()})
-            return ml
-        }
-
-
-
-    div.dataset.data = JSON.stringify(obj);
-    div.getData = function(){return JSON.parse(div.dataset.data);}
-    div.saveData = function(obj){
-        div.dataset.data = JSON.stringify(obj);
-    }
-    div.refresh = function(array){
-        if (array){div.saveList(array);}
-        lis.refresh()
-        r.refresh();
-    }
-    div.saveList = function(array){
-        let d = div.getData();
-        d.blueprint = array;
-        div.saveData(d)
-    }
-    div.refreshItem = function(newItem,id){
-        let d = div.getData();
-        d.blueprint = save_item(id,newItem,div.list(),"items")
-        div.saveData(d);
-        div.preview()
-    }
-    div.findItem = function(id){
-        return div.goTo(get_index("id",id,div.list(),"items"))
-    }
-    div.getItemData = function(id){
-        return getItemFromList(id,div.list())
-    }
-    div.goTo = function(index){
-        if (!index){return -1}
-        if (index.length === 1){return Array.from(lis.childNodes)[index[0]]}
-        let p = lis;
-        for (var i=0; i<index.length; i++){
-            if (p.classList.contains("bpItemDiv") && p.getItem && p.getItem().type === "Group"){
-                p.open();
-                p = p.nextElementSibling;
-            } else {
-                p = p.childNodes[index[i]];
-                if (p !== undefined && index.length-1 === i && p.getItem && p.getItem().type === "Group"){p.open()}
-            }
-            // FIX THIS SOMEHOW???
-        }
-        return p
-    }
-    div.list = function(){
-        return div.getData().blueprint;
-    };
-    div.preview = function(){
-        r.refresh()
-    }
-
-
-    div.right = r;
-    div.left = lis;
-    lis.refresh()
-
-
-    div.ondragover = function(event){event.preventDefault();}
-    div.ondrop = modDragDrop;
-
-
-    return div
-}
-
-function bpItemDiv(obj){
-    let div = cre("div","bpItemDiv");
-        let icon = ic(modList[obj.type].icon);
-            append(icon,div);
-        let name = append(cre("span","bpItemName"),div);
-            name.innerText = obj.name;
-
-    div.getID = function(){return obj.id}
-    div.getItem = function(){
-        return getItemFromList(div.getID(),pd("blueprintDiv").list())
-    }
-    div.refreshName = function(){
-        name.innerText = div.getItem().name
-    }
-    name.onclick = function(){
-        let ppd = popupcontainer("content","popupModuleSettings");
-        if (ppd){
-            ppd.saveData(obj.id);
-            let b = popupcontent("bp",ppd);
-        }
-        // popupcontainer("content","bp",div.getItem(),div)
-    }
-
-
-    /*
-
-        DRAGGING AND DROPPING
-
-     */
-     icon.draggable = true;
-     div.ondragstart = modDragStart;
-
-    // DRAG/DROP functions
-    div.ondrop = modDragDrop;
-
-if (obj.type === "Group"){
-    div.ondragover = function(event){event.preventDefault();}
-
-    div.ondblclick = function(){
-        if (div.isOpen){
-            div.isOpen() ? div.close() : div.open()
-        }
-    }
-    div.open = function(){
-        if (div.nextElementSibling === null || !div.nextElementSibling.classList.contains("bpItemBodyDiv")) {
-            let body = cre("div", "bpItemDivBody");
-            div.after(body);
-                body.getItem = div.getItem;
-                for (var i=0;i<obj.items.length;i++){
-                    append(bpItemDiv(obj.items[i]),body);
-                }
-            body.getID = div.getID;
-            body.getItem = div.getItem;
-            body.ondrop = modDragDrop;
-        }
-    }
-    div.close = function(){
-        if (div.isOpen()){div.nextElementSibling.remove()}
-    }
-    div.isOpen = function(){
-        return (div.nextElementSibling && div.nextElementSibling.classList.contains("bpItemDivBody"))
-    }
-}
-
-    div.getIndex = function(){
-        return get_index("id",obj.id,pd("blueprintDiv").list(),"items")
-    }
-
-    return div;
-}
 
 
 
@@ -231,7 +38,7 @@ function popupcontainer(parent,id){
 }
 
 function popupcontent(type,div){
-let main = pd("blueprintDiv")
+let main = mcd()
 if (type === "bp"){
     // Modifier Options
     let id = div.getData();
@@ -239,7 +46,7 @@ if (type === "bp"){
 
 
     let inp = cInput({
-    "name": "Module", "type": "Module",
+    "type": "Module",
     "modifiers": [
         {   "affect": "moduleType", "value": "Input"  },
         {   "affect": "type",   "value": "Text" },
@@ -254,7 +61,7 @@ if (type === "bp"){
         {   "affect": "fontSize","value": "1.5rem" },
         {   "affect": "borderThickness", "value": "2px"  },
         {   "affect": "borderStyle", "value": "solid"    },
-        {   "affect": "borderColor", "value": "green"     },
+        {   "affect": "borderColor", "value": "black"     },
         {   "affect": "borderRadius", "value": "5rem"     }
     ]
 })
@@ -288,6 +95,27 @@ else if (type === "bpSelectModule"){
 } else if (type === "bpSelectStyle"){
     lpOptionList(div,stylesList,"styles","popupSelectStyleOptions")
 
+} else if (type === "sv") {
+    div.rename("Choose Blueprint Module as Value");
+    let id = pd("popupModuleSettings").dataset.data;   let item = main.getItemData(id);
+    let mod = div.modifier;
+        // let modType = findOption(mod,"modifiers","affect","moduleType").value;
+    let search = findOption(item,"modifiers","affect",mod.affect);
+
+    let lis = main.getModules("blueprint");
+
+    let sp = append(cre("h3","csmpHeader"),div.body); sp.innerHTML = "<strong>Option: </strong>" + mod.title;
+    let lp = append(cre("h3","csmpHeader"),div.body); lp.innerHTML = "<strong>Module Picked:</strong> " + (search.defaultValue ? (getItemFromList(search.defaultValue,mcd().getData().blueprint).name + " (" + search.defaultValue + ")"): "None");
+    let clear = append(cre("button","csmpBtn"),div.body); clear.innerText = "Deselect Module";
+        clear.onclick = function(){
+            div.btn.clear();   div.refreshFunc();   div.exit();
+        }
+
+        for (var i=0; i<lis.length; i++){
+            let gm = lis[i];   let m = append(csModPickerDiv(gm),div.body);
+            m.btn.onclick = function(){
+                div.btn.setValue(gm.id);   div.refreshFunc();   div.exit();
+        }}
 }else {console.log("huh?"); return 1}
 
 return div
@@ -304,16 +132,7 @@ function lpGroupBtn(name,f){
 
 
 function getOptionListRecs(optionlist,mod){
-    let types = [];
-    types.push(mod.type);
-    if (mod.type === "Module"){
-        let r = findOption(mod,'modifiers','affect','moduleType');
-        if (r){types.push(r.value);}
-        if (r.value === "Input"){
-            let q = findOption(mod,'modifiers','affect','type');
-            if (q){types.push(q.value);}
-        }
-    }
+    let types = getModType(mod)
 
     function filterFunc(x){
         if (x.main.includes("All")){return true}
@@ -340,10 +159,12 @@ function getOptionListRecs(optionlist,mod){
 
 
 function lpOptionList(div,optionList,type,id){
-    let data = getItemFromList(div.getData(),pd("blueprintDiv").list());
+    let data = getItemFromList(div.getData(),mcd().list());
 
-    let recs = getOptionListRecs(optionList,data)
+    let recs = getOptionListRecs(optionList,data);
     let others = optionList.filter(x => recs.findIndex(y => y.affect === x.affect) === -1);
+    let all = optionList.filter(x => x.main.includes("All"));
+    recs = recs.filter(x => !x.main.includes("All"))
 
     // inverse of recs
     let sl = append(cre("div","bpmpList"), div.body);
@@ -352,6 +173,12 @@ function lpOptionList(div,optionList,type,id){
         rt.innerText = "recommended";
         for (var i=0; i<recs.length; i++){
             sl.appendChild(bpModifierDiv(recs[i],data[div.keyword]));
+        }
+
+        let al = append(cre("h2","bpmpTitle"),sl);
+        al.innerText = "compatible";
+        for (var i=0; i<all.length; i++){
+            sl.appendChild(bpModifierDiv(all[i],data[div.keyword]));
         }
 
         let it = append(cre("h2","bpmpTitle"),sl);
@@ -364,10 +191,10 @@ function lpOptionList(div,optionList,type,id){
             return Array.from(sl.childNodes).filter(x => x.classList.contains("bpModifierDiv") && x.checked()).map(x => x.getData())
         };
         sl.refresh = function(){
-            let dt = getItemFromList(div.getData(),pd("blueprintDiv").list());
+            let dt = getItemFromList(div.getData(),mcd().list());
             dt[type] = sl.getValue();
-            pd("blueprintDiv").refreshItem(dt,dt.id);
-            pd("blueprintDiv").preview()
+            mcd().refreshItem(dt,dt.id);
+            mcd().preview()
         }
 }
 
@@ -401,6 +228,29 @@ function bpModifierDiv(mod,obj){
             title.onclick = function(){   ck.onclick();    }
 
     let bot = append(cre("div","bot"),div);
+        // if in Charsheet
+        let vtbtn;
+        if (mcd() && mcd().id === "charSheetDiv"){
+            vtbtn = cre("button","bpmdVarBtn");
+                append(ic("variable_insert"),vtbtn);
+                vtbtn.getValue = function(){
+                    return vtbtn.dataset.data
+                }
+                vtbtn.setValue = function(value){vtbtn.dataset.data = value}
+                vtbtn.clear = function(){vtbtn.removeAttribute('data-data')}
+                vtbtn.onclick = function(){
+                    let ppd = popupcontainer("content","popupSelectVariable");
+                    if (ppd){
+                        ppd.modifier = mod;
+                        ppd.btn = vtbtn;
+                        ppd.refreshFunc = inputFunc;
+                        popupcontent("sv",ppd)
+                    }}
+            bot.appendChild(vtbtn)
+            if (match){if (match.defaultValue){vtbtn.setValue(match.defaultValue)}}
+        }
+
+
         // INPUT DIFFERENT TYPES
         let inp;
         let type = findOption(mod,'modifiers','affect','moduleType');
@@ -441,7 +291,7 @@ function bpModifierDiv(mod,obj){
          return inp.getValue()
     }
     div.getData = function(){
-        return {affect: mod.affect, value: div.getValue()}
+        return {affect: mod.affect, value: div.getValue(), defaultValue: (vtbtn && vtbtn.getValue ? vtbtn.getValue() : undefined)}
     }
     div.checked = function(){
         return ck.getValue();

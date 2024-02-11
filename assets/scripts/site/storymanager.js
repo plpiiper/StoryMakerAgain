@@ -11,12 +11,11 @@ let left = append(cre("div","left"),div);
         let add = append(ic("add"),lm);
             add.onclick = function(){
                 console.log("add");
+                toast("This feature is not yet available.");
             };
 let right = append(cre("div","right"),div);
     right.refresh = function(id){
         const s = storyList.find(x => x.id === id);
-        console.log(id)
-
         if (!s){return}
         pd("smStoryName").innerText = s.name;
     }
@@ -50,7 +49,11 @@ div.changeStory = function(id){
 div.openMenuItem = function(name){
     if (!div.selectedStory()){return}
     if (name === "blueprint"){
-        createBlueprintDiv("content",storyList.find(x => x.id === div.selectedStory()))
+        createSheetsDiv("content",storyList.find(x => x.id === div.selectedStory()),"blueprint")
+    } else if (name === "char_sheet"){
+        createSheetsDiv("content",storyList.find(x=>x.id === div.selectedStory()),"charsheet")
+    } else {
+        toast("This feature is not yet available.")
     }
 }
 div.exit = function(){
@@ -60,6 +63,7 @@ div.exit = function(){
 
 
 div.refreshStories()
+if (storyList.length > 0){lis.childNodes[0].click();}
 return div
 }
 

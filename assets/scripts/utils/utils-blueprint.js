@@ -29,7 +29,7 @@ function modDragDrop(){
     }
 
 
-    let o = pd("blueprintDiv").list();
+    let o = mcd().list();
     // SHIFT THIS LATER
     o = delete_item(itemID,o,"items");
     if (dropDiv.list){
@@ -40,10 +40,23 @@ function modDragDrop(){
 
     itemDiv.remove()
     // REFRESH
-    pd("blueprintDiv").refresh(o)
+    mcd().refresh(o)
 
 
-    pd("blueprintDiv").goTo(get_index("id",itemID,o,"items"))
+    mcd().goTo(get_index("id",itemID,o,"items"))
 
 
+}
+
+function getModType(mod){
+    if (mod.type !== "Module"){return [mod.type]}
+    else {
+        let arr = [];
+        arr.push(mod.type);
+        arr.push(findOption(mod,"modifiers","affect",'moduleType').value)
+        if (arr[1] === "Input"){
+            arr.push(findOption(mod,"modifiers","affect",'type').value)
+        }
+        return arr
+    }
 }

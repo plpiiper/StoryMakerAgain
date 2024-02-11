@@ -1,10 +1,3 @@
-const nvRandomIDChars = {
-    num: "0123456789",
-    letters: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-}
-
-
-
 var storyList = [
     {
         id: "ABCD1234",
@@ -81,7 +74,7 @@ var storyList = [
                     },
                     {
                         "affect": "borderColor",
-                        "value": "green"
+                        "value": "black"
                     }
                 ]
             },
@@ -167,7 +160,7 @@ var storyList = [
                                     },
                                     {
                                         "affect": "borderColor",
-                                        "value": "green"
+                                        "value": "black"
                                     }
                                 ]
                             }
@@ -176,11 +169,116 @@ var storyList = [
                 ]
             }
         ],
-        storysheet: {
-            order: []
-        }
+        charsheet: [
+            {
+                "name": "New Text",
+                "type": "Text",
+                "id": "426QNZ56",
+                "modifiers": [
+                    {
+                        "affect": "innerText",
+                        "value": "Character Sheet"
+                    }
+                ],
+                "styles": [
+                    {
+                        "affect": "textAlign",
+                        "value": "center"
+                    },
+                    {
+                        "affect": "fontSize",
+                        "value": "32px"
+                    }
+                ]
+            },
+            {
+                "name": "New List",
+                "type": "List",
+                "id": "H5J4DFI3",
+                "modifiers": [
+                    {
+                        "affect": "listOptions",
+                        "value": [
+                            "Green",
+                            "Blue",
+                            "Orange"
+                        ],
+                        "defaultValue": "A1B2C3D4"
+                    },
+                    {
+                        "affect": "listStyle",
+                        "value": "Tag"
+                    },
+                    {
+                        "affect": "listSpacingHorizontal",
+                        "value": "4px"
+                    },
+                    {
+                        "affect": "listSpacingVertical",
+                        "value": "2px"
+                    },
+                    {
+                        "affect": "listOptionAlignment",
+                        "value": "Row"
+                    }
+                ],
+                "styles": [],
+                "items": []
+            },
+            {
+                "name": "Other Bar",
+                "type": "Bar",
+                "id": "01SWCLV8",
+                "modifiers": [
+                    {
+                        "affect": "barLineThickness",
+                        "value": "8px"
+                    },
+                    {
+                        "affect": "barValueText",
+                        "value": "Medium"
+                    },
+                    {
+                        "affect": "barValueValue",
+                        "value": "7"
+                    },
+                    {
+                        "affect": "barLeftValue",
+                        "value": "1"
+                    },
+                    {
+                        "affect": "barLeftText",
+                        "value": "Dim"
+                    },
+                    {
+                        "affect": "barRightValue",
+                        "value": "10"
+                    },
+                    {
+                        "affect": "barRightText",
+                        "value": "Bright"
+                    },
+                    {
+                        "affect": "barTextPosition",
+                        "value": "Center"
+                    },
+                    {
+                        "affect": "barLineMargin",
+                        "value": "8px"
+                    },
+                    {
+                        "affect": "barLineColor",
+                        "value": "skyblue"
+                    }
+                ],
+                "styles": [],
+                "items": []
+            }
+        ]
     }
 ];
+
+var presetList = []
 
 var examplePresets = [
     {
@@ -194,27 +292,3 @@ var examplePresets = [
 ];
 
 
-const smBtnGroup_obj = [
-    [
-        { icon: "settings_account_box", text: "story info", f: function(){
-            pd("storyManager").openMenuItem("story_info")
-        }},
-        { icon: "groups", text: "manage characters", f: function(){
-            pd("storyManager").openMenuItem("manage_chars")
-        }},
-        { icon: "auto_stories", text: "guide", f: function(){
-            pd("storyManager").openMenuItem("guide")
-        }}
-    ],
-    [
-        { icon: "fingerprint", text: "blueprint", f: function(){
-            pd("storyManager").openMenuItem("blueprint")
-        }},
-        { icon: "description", text: "character sheet", f: function(){
-            pd("storyManager").openMenuItem("char_sheet")
-        }},
-        { icon: "move_item", text: "exit", f: function(){
-            pd("storyManager").exit();
-        }}
-    ]
-]

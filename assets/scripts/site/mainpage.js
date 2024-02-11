@@ -13,8 +13,12 @@ function createHomePage(parent){
             {name: "Stories", f: function(){
                 createStoryManager("content")
             }},
-            {name: "Settings", f: function(){console.log("openthis","settings"); }},
-            {name: "Guide", f: function(){console.log("openthis","guide"); }}
+            {name: "Settings", f: function(){
+                toast("This feature is not yet available.")
+             }},
+            {name: "Guide", f: function(){
+                    toast("This feature is not yet available.");
+            }}
         ]
         function opfunc(o){
             let sp = cre("span");
@@ -31,4 +35,15 @@ function createHomePage(parent){
             append(ic("share"),agt);
 
     return div
+}
+
+
+function toast(text){
+    var div = document.getElementById("toast");
+    if (div !== null) {div.remove()}
+    div = document.createElement("div"); document.getElementById("content").appendChild(div); div.id = "toast";
+
+    div.innerText = text;
+    setTimeout(function(){   div.classList.add("visible");   },100)
+    setTimeout(function(){   div.classList.toggle("visible");   },3000)
 }

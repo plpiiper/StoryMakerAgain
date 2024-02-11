@@ -1,6 +1,7 @@
 function coverDiv(parent){
     let p = parent; if (typeof parent == "string") {p = document.getElementById(p)}
-    let cov = document.createElement("div"); cov.className = "coverDiv"; p.appendChild(cov); cov.onclick = function(event){
+    let cov = append(cre("div","coverDiv"),p)
+        cov.onclick = function(event){
         if (event.target === cov) {cov.remove()} }
     if (pd(".coverDiv").length > 1){cov.style.backgroundColor = "transparent";}
     return cov
@@ -144,7 +145,18 @@ function setModuleOptions(div,obj){
         let it = findOption(obj,"modifiers","affect", search.affect);
         if (it){
             if (div[search.funcName]){
-                div[search.funcName](it.value,"bot")
+                let v = it.value;
+                if (it.defaultValue){
+                    // if in char sheet
+                    if (mcd() !== null){
+                        let mod = mcd().getModules("blueprint").find(x => x.id === it.defaultValue);
+                        // FIX THIS A LOT
+                        if ((getModType(mod).includes("Dropdown") || getModType(mod).includes("List") || obj.type === "List") && it.value.length === 0){
+                            v = randomList(randomListOfWord,2,10)
+                        }
+                    }
+                }
+                div[search.funcName](v,"bot")
             } else {console.log("???")}
         }
     }

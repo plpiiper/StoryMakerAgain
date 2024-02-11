@@ -1,16 +1,3 @@
-/*
-
-INPUT
- - Text, Number
- - Range (special?)
- -
-DROPDOWN
-
-LIST
-
-
-
- */
  function cInput(obj){
 let e = cContainer()
 if (obj.id){e.dataset.id = obj.id}
@@ -38,7 +25,7 @@ if (obj.id){e.dataset.id = obj.id}
     // STYLE
      setModuleOptions(inp,obj)
     return e
- }
+}
 
 
 
@@ -256,7 +243,11 @@ function cGroup(obj){
         div.style.display = "flex";
         div.style.flexDirection = value;
     }
-
+    div.getValue = function(){
+        let arr = [];
+        Array.from(div.childNodes).filter(x => x.getValue && (x.classList.contains("moduleContainer") || x.classList.contains("cGroup"))).map(x =>arr = arr.concat(x.getValue()));
+        return arr
+    }
     setModuleOptions(div,obj)
     return div
 }
@@ -288,3 +279,4 @@ function cContainer(){
 
     return div
 }
+
