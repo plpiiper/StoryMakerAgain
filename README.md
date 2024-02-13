@@ -1,6 +1,7 @@
 # Story Maker V2
 This is a web-based project created to build customizable Character Sheets in a transformative way; in the form of modular building blocks.
 [View Related Figma](https://www.figma.com/file/d4TwlKNwFrx3j1bcds9Tv8/CharacterCreator?type=design&node-id=383%3A138&mode=design&t=3hMat6gXAa8MExxv-1)
+[View Site](https://plpiiper.github.io/StoryMakerAgain/)
 
 # Steps in the Process
 1. Create Story
