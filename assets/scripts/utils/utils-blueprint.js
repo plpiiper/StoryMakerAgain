@@ -42,7 +42,6 @@ function modDragDrop(){
     // REFRESH
     mcd().refresh(o)
 
-
     mcd().goTo(get_index("id",itemID,o,"items"))
 
 
@@ -67,3 +66,6 @@ function getFriendlyName(list,searchKey,searchVal){
         return list.find(x => x[searchKey] === searchVal).title
     } else {return false}
 }
+
+
+

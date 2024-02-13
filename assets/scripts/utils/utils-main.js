@@ -11,20 +11,7 @@ function pd(parent){
 }
 
 
-function generateID(){
-    let id = ""; let lis = ["num","letters"]
-    for (var i=0; i<8; i++){
-        let vallist = nvRandomIDChars[lis[Math.floor(Math.random() * 2)]]
-        id += vallist[Math.floor(Math.random() * vallist.length)]
-    }
-    return id
-}
 
-function randomID(list){
-    let ri = generateID();
-        while (list.find(x => x.id === ri)){ri = generateID()}
-    return ri
-}
 
 
 function randomList(list,min,max){
@@ -95,38 +82,36 @@ function insertItemAfter(index,pLoc,obj,list,parentKey){
     }
     return m
 }
-function get_index(key,text,array,parentKey){
-    var list; var found = false;
-    get_index_formula(key,text,array,[])
-    /*
-    Use: Loops through entire array[], keeping track of the location being searched through (index) until key matches. Returns array
-    */
-    function get_index_formula(key,text,array,index){
-        for (var i=0; i<array.length; i++){
-            if (key in array[i] && array[i][key] === text) {
-                let new_ind = index; new_ind.push(i);
-                list = new_ind; found = true; return}
-        } //searches first in array if it exists
-
-//then, looks inside folders of the array if nothing is returned
-        for (var i=0; i<array.length; i++){
-            if (parentKey in array[i] && array[i][parentKey].length > 0 && !found) {
-// looking through folders with "texts" inside
-                let child_nodes = array[i][parentKey]
-                let new_ind = index; new_ind.push(i); // this is how index is tracked, and then reported if it matches in the above loop
-                get_index_formula(key,text,child_nodes,new_ind)
-                // continues the loop to look through each groups insides
-            }}
+function addItemSibling(index,pLoc,obj,list,parentKey){
+    if (pLoc.length === 0){
+        list = list.slice(0,index).concat([obj]).concat(list.slice(index))
+    } else {
+        let pl = get_item(pLoc,list,parentKey);
+            pl[parentKey] = pl[parentKey].slice(0,index).concat([obj]).concat(pl[parentKey].slice(index))
     }
-
-// then this returns an array which have the indexes of the array:
-// example [1,0] would be array[1].items[0]
-    /*
-    << because of how this is stored,
-     if parent == MAIN is checked in all of the functions.
-    */
     return list
 }
+
+function get_index(key,text,array,parentKey){
+    let list; var found = false;
+    get_index_formula(key,text,array,[])
+    function get_index_formula(key,text,array,index){
+        let initial = array.findIndex(x => x[key] === text);
+        if (initial !== -1){
+            let new_ind = index; new_ind.push(initial);
+            list = new_ind; found = true; return;
+        } //searches first in array if it exists
+
+        for (var i=0; i<array.length; i++){
+            if (array[i][parentKey] && array[i][parentKey].length > 0 && !found) {
+                let child_nodes = array[i][parentKey]
+                let new_ind = index.concat([i]);
+                get_index_formula(key,text,child_nodes,new_ind)
+            }}
+    }
+    return list
+}
+
 function get_insides(location,list,parentKey){
     var li = list; for (var i=0; i<location.length;i++){
         if (li[location[i]] !== undefined && parentKey in li[location[i]]) {li = li[location[i]][parentKey]}

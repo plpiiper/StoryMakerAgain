@@ -45,6 +45,7 @@ function cList(obj){
 
     // STYLE
     setModuleOptions(list,obj)
+    e.setValue = list.addOption
     return e
 }
 
@@ -153,14 +154,26 @@ function cBar(obj){
 
 function csModPickerDiv(obj){
     let modType = findOption(obj,"modifiers","affect","moduleType").value;
-    let subType = findOption(obj,"modifiers","affect","type").value
+    let subType = findOption(obj,"modifiers","affect","type")
 
     let div = cre("div","csModPickerDiv");
         let name = append(cre("span","csmpdName"),div); name.innerText = obj.name;
         let id = append(cre("span","csmpdID"),div); id.innerText = obj.id;
-        let type = append(cre("span","csmpdType"),div); type.innerText = modType + (subType ? "(" + subType + ")": "");
+        let type = append(cre("span","csmpdType"),div); type.innerText = modType + (subType ? "(" + subType.value + ")": "");
         let btn = append(cre("button","csmpdBtn"),div); btn.innerText = "Choose";
             div.btn = btn;
             div.obj = obj;
     return div
+}
+
+
+function setCharSheet(char,list){
+    let r = mcd().right;
+    if (mcd().swap === "blueprint"){r.addItem(char)}
+    else {
+        for (var i = 0; i < list.length; i++) {
+            let m = list[i];
+            r.addItem(m)
+        }
+    }
 }

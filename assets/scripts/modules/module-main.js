@@ -3,6 +3,7 @@ function coverDiv(parent){
     let cov = append(cre("div","coverDiv"),p)
         cov.onclick = function(event){
         if (event.target === cov) {cov.remove()} }
+        cov.oncontextmenu = function(){event.preventDefault()}
     if (pd(".coverDiv").length > 1){cov.style.backgroundColor = "transparent";}
     return cov
 }
@@ -134,7 +135,13 @@ function setModuleOptions(div,obj){
     for (var i=0; i<ll.length;i++){
         let key = ll[i];for (var x=0; x<obj[key].length; x++){
             let m = obj[key][x];
-            if (key === "styles"){div['style'][m.affect] = m.value}
+            if (key === "styles"){
+                if (m.affect === "margin" && div.parentNode !== null && div.parentNode.classList.contains("moduleContainer")){
+                    div.parentNode['style'][m.affect] = m.value
+                } else if ((m.affect === "width" || m.affect === "height") && div.parentNode !== null && div.parentNode.classList.contains("moduleContainer")){
+                    div.parentNode['style'][m.affect] = m.value
+                }  else {div['style'][m.affect] = m.value}
+                }
             else {
                 div[m.affect] = m.value;
             }
@@ -148,11 +155,24 @@ function setModuleOptions(div,obj){
                 let v = it.value;
                 if (it.defaultValue){
                     // if in char sheet
-                    if (mcd() !== null){
+                    if (window['mcd']&& mcd() !== null){
                         let mod = mcd().getModules("blueprint").find(x => x.id === it.defaultValue);
+                        let ch = pd("selectedCharacter");
+                        if (ch !== null){ let chit = ch.getItem();
+                            let input = chit.list.find(x => x.id === it.defaultValue);
+                            if (input) {
+                                v = input.value;
+                            }
+                        }else {
                         // FIX THIS A LOT
                         if ((getModType(mod).includes("Dropdown") || getModType(mod).includes("List") || obj.type === "List") && it.value.length === 0){
                             v = randomList(randomListOfWord,2,10)
+                        }}
+                    }
+                    if (window['alternateSearch']){
+                        let lis = alternateSearch(it);
+                        let inp = lis[1].list.find(x => x.id === it.defaultValue); if (inp){
+                            v = inp.value;
                         }
                     }
                 }

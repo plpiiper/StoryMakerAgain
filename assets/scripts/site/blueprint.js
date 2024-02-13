@@ -1,8 +1,3 @@
-
-
-
-
-
 function popupcontainer(parent,id){
     if (pd(id) !== null){return}
     // do not create a new one if exists
@@ -70,7 +65,7 @@ if (type === "bp"){
             let it = main.getItemData(id)
             it.name = inp.getValue();
             main.refreshItem(it,it.id)
-            main.findItem(id).refreshName()
+            main.findItem(it.id).refreshName()
         })
     div.body.appendChild(inp)
 
@@ -93,9 +88,11 @@ if (type === "bp"){
 }
 else if (type === "bpSelectModule"){
     lpOptionList(div,modifiersList,"modifiers","popupSelectModuleOptions")
-} else if (type === "bpSelectStyle") {
+}
+else if (type === "bpSelectStyle") {
     lpOptionList(div, stylesList, "styles", "popupSelectStyleOptions")
-} else if (type === "bpSelectPreset"){
+}
+else if (type === "bpSelectPreset"){
     let sp = append(cre("div","popupPreviewText"),div.body); sp.innerText = "Preview, Change Modules, Change Styles";
     let btn = append(cre("button","popupPreviewBtn"),div.body);
     btn.innerText = "Add Current Item (" + mcd().getItemData(div.getData()).name + ") as a Preset"
@@ -110,7 +107,8 @@ else if (type === "bpSelectModule"){
         div.exit();
     }
     lpPresetList(div, presetList, "popupSelectStyleOptions");
-} else if (type === "presetPreview"){
+}
+else if (type === "presetPreview"){
     div.rename("Preview Preset")
     let preset = presetList.find(x => x.id === JSON.parse(div.getData()).id);
     let dp = cDropdown({
@@ -170,13 +168,14 @@ else if (type === "bpSelectModule"){
             append(cCreate(selectedObj),prev);
         }
 
-}else if (type === "sv") {
+}
+else if (type === "sv") {
     div.rename("Choose Blueprint Module as Value");
     let item = main.getItemData(pd("popupModuleSettings").dataset.data);
     let search = findOption(item,"modifiers","affect",div.modifier.affect);
 
     let sp = append(cre("h3","csmpHeader"),div.body); sp.innerHTML = "<strong>Option: </strong>" + div.modifier.title;
-    let lp = append(cre("h3","csmpHeader"),div.body); lp.innerHTML = "<strong>Module Picked:</strong> " + (search.defaultValue ? (getItemFromList(search.defaultValue,mcd().getData().blueprint).name + " (" + search.defaultValue + ")"): "None");
+    let lp = append(cre("h3","csmpHeader"),div.body); lp.innerHTML = "<strong>Module Picked:</strong> " + (search && search.defaultValue ? (getItemFromList(search.defaultValue,mcd().getData().blueprint).name + " (" + search.defaultValue + ")"): "None");
     let clear = append(cre("button","csmpBtn"),div.body); clear.innerText = "Deselect Module";
         clear.onclick = function(){
             div.btn.clear();   div.refreshFunc();   div.exit();
@@ -187,7 +186,38 @@ else if (type === "bpSelectModule"){
             m.btn.onclick = function(){
                 div.btn.setValue(gm.id);   div.refreshFunc();   div.exit();
         }}
-}else {console.log("huh?"); return 1}
+}
+else if (type === "charSettings"){
+    let id = div.getData();
+    div.rename("Character Options")
+    let inp = cInput({
+        "type": "Module",
+        "modifiers": [
+            {   "affect": "moduleType", "value": "Input"  },
+            {   "affect": "type",   "value": "Text" },
+            {   "affect": "textInsetText",  "value": "Name" },
+            {   "affect": "textInsetPosition",  "value": "Bottom" },
+            {   "affect": "textInsetMarginHorizontal",  "value": "1rem" },
+            {   "affect": "textInsetMarginVertical",  "value": "2px" }
+        ],
+        "styles": [
+            {   "affect": "width",  "value": "100%"  },
+            {   "affect": "padding", "value": "1rem 2rem"  },
+            {   "affect": "fontSize","value": "1.5rem" },
+            {   "affect": "borderThickness", "value": "2px"  },
+            {   "affect": "borderStyle", "value": "solid"    },
+            {   "affect": "borderColor", "value": "black"     },
+            {   "affect": "borderRadius", "value": "5rem"     }
+        ]
+    })
+    inp.setValue(main.getItemData(id).name);
+    inp.setFunction("input",function(){
+        let it = main.getItemData(id); it.name = inp.getValue();
+        main.refreshItem(it,it.id); main.findItem(id).refreshName()
+    })
+    div.body.appendChild(inp)
+}
+else {console.log("huh?"); return 1}
 
 return div
 }

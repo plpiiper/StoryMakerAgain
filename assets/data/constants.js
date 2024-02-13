@@ -63,7 +63,21 @@ const randomListOfWord = {
     ]
 }
 
+function generateID(){
+    let id = ""; let lis = ["num","letters"]
+    for (var i=0; i<8; i++){
+        let vallist = nvRandomIDChars[lis[Math.floor(Math.random() * 2)]]
+        id += vallist[Math.floor(Math.random() * vallist.length)]
+    }
+    return id
+}
 
+function randomID(list){
+    let ri = generateID(); if (!list){return ri};
+    if (typeof list === "function"){list = list()}
+    while (getItemIDList(list,"items").includes(ri)){ri = generateID()}
+    return ri
+}
 
 const modList = {
     Text: {
@@ -80,8 +94,12 @@ const modList = {
         icon: "folder",
         modifiers: [
             {
-                affect: "itemAlignment",
-                funcName: "setAlignment"
+                affect: "itemAlignmentV",
+                funcName: "setAlignmentV"
+            },
+            {
+                affect: "itemAlignmentH",
+                funcName: "setAlignmentH"
             },
             {
                 affect: "itemArrangement",
@@ -118,6 +136,10 @@ const modList = {
                     {
                         affect: "textInsetMarginHorizontal",
                         funcName: "setInsetPosHorizontal"
+                    },
+                    {
+                        affect: "dropdownInputWidth",
+                        funcName: "setInputWidth"
                     }
                 ],
                 f: "cDropdown"
@@ -146,6 +168,36 @@ const modList = {
                     }
                 ],
                 f: "cInput"
+            },
+            Textarea: {
+                icon: "keyboard",
+                modifiers: [
+                    {
+                        affect: "textValue",
+                        funcName: "setText"
+                    },
+                    {
+                        affect: "textareaResize",
+                        funcName: "setResize"
+                    },
+                    {
+                        affect: "textInsetPosition",
+                        funcName: "setInsetPos"
+                    },
+                    {
+                        affect: "textInsetText",
+                        funcName: "setInsetText"
+                    },
+                    {
+                        affect: "textInsetMarginVertical",
+                        funcName: "setInsetPosVertical"
+                    },
+                    {
+                        affect: "textInsetMarginHorizontal",
+                        funcName: "setInsetPosHorizontal"
+                    }
+                ],
+                f: "cTextarea"
             },
             Boolean: {
                 modifiers: [
@@ -241,6 +293,10 @@ const modList = {
             }
         ],
         f: "cBar"
+    },
+    Character: {
+        icon: "person",
+        f: function(){return ""}
     }
 }
 
@@ -250,7 +306,7 @@ const modifiersList = [
         title: "Module Type", text: "Choose the module type",
         type: "Module",
         modifiers: [
-            {   affect: "options", value: ["Input","Dropdown"]  },
+            {   affect: "options", value: ["Input","Dropdown","Textarea"]  },
             {   affect: "defaultValue", value: "Input"  },
             {   affect: "moduleType", value: "Dropdown"    }
         ]
@@ -314,6 +370,15 @@ const modifiersList = [
         ]
     },
     {
+        main: "Dropdown", affect: "dropdownInputWidth",
+        title: "Dropdown Input Width", text: "Change the size of the input width when paired with Allow Input",
+        type: "Module",
+        modifiers: [
+            {   affect: "moduleType", value: "Input"    },
+            {   affect: "type", value: "Text"    }
+        ]
+    },
+    {
         main: "Text", affect: "textValue",
         title: "Text", text: "The text inside the text element",
         type: "Module",
@@ -322,8 +387,17 @@ const modifiersList = [
             {   affect: "type", value: "Text"    }
         ]
     },
+    { main: "Module", sub: ["Textarea"], affect: "textareaResize",
+    title: "Resizablity", text: "Choose the type of resizing that can be done to the Textarea",
+        type: "Module",
+        modifiers: [
+            {   affect: "moduleType", value: "Dropdown"    },
+            {   affect: "options", value: ["Both","None","Vertical","Horizontal"]  }
+        ]
+
+    },
     {
-        main: "Module", sub: ["Input","Dropdown"], affect: "textInsetPosition",
+        main: "Module", sub: ["Input","Dropdown","Textarea"], affect: "textInsetPosition",
         title: "Inset Text Position", text: "Have text inside area?",
         type: "Module",
         modifiers: [
@@ -332,7 +406,7 @@ const modifiersList = [
         ]
     },
     {
-        main: "Module", sub: ["Input","Dropdown"], affect: "textInsetText",
+        main: "Module", sub: ["Input","Dropdown","Textarea"], affect: "textInsetText",
         title: "Inset Text", text: "Have text inside area?",
         type: "Module",
         modifiers: [
@@ -341,7 +415,7 @@ const modifiersList = [
         ]
     },
     {
-        main: "Module", sub: ["Input","Dropdown"], affect: "textInsetMarginVertical",
+        main: "Module", sub: ["Input","Dropdown","Textarea"], affect: "textInsetMarginVertical",
         title: "Inset Text Vertical Margin", text: "Shift the position of the inset text vertically from its position.",
         type: "Module",
         modifiers: [
@@ -350,7 +424,7 @@ const modifiersList = [
         ]
     },
     {
-        main: "Module", sub: ["Input","Dropdown"], affect: "textInsetMarginHorizontal",
+        main: "Module", sub: ["Input","Dropdown","Textarea"], affect: "textInsetMarginHorizontal",
         title: "Inset Text Horizontal Margin", text: "Shift the position of the inset text horizontally from its position.",
         type: "Module",
         modifiers: [
@@ -371,8 +445,21 @@ const modifiersList = [
         ]
     },
     {
-        main: "Group", affect: "itemAlignment",
-        title: "Item Alignment", text: "Align this here...",
+        main: "Group", affect: "itemAlignmentV",
+        title: "Item Alignment (Vertical)", text: "Align this here...",
+        type: "Module",
+        modifiers: [
+            {   affect: "moduleType", value: "Dropdown"    },
+            {affect: "options", value: [
+                    {name: "Left", value: "left"},
+                    {name: "Center", value: "center"},
+                    {name: "Right", value: "right"}
+                ]}
+        ]
+    },
+    {
+        main: "Group", affect: "itemAlignmentH",
+        title: "Item Alignment (Horizontal)", text: "Align this here...",
         type: "Module",
         modifiers: [
             {   affect: "moduleType", value: "Dropdown"    },
@@ -701,13 +788,78 @@ const stylesList = [
     },
 ]
 
+
+const standardModules = {
+    Text: { name: "Text", type: "Text",
+        id: "abcd1234",
+        modifiers: [
+            {affect: "textValue", value: "Text Here"}
+        ],
+        styles: [
+            {affect: "fontSize", value: "32px"}
+        ]
+    },
+    Group: { name: "Group", type: "Group",
+        id: "abcd1234",
+        modifiers: [], styles: [],
+        items: []
+    },
+    Module: {
+        name: "Module", type: "Module",
+        id: "abcd1234",
+        modifiers: [
+            {affect: "moduleType", value: "Input"},
+            {affect: "type", value: "Text"},
+            {affect: "dropdownInputWidth", value: "50%"}
+        ],
+        styles: [
+            {affect: "width", value: "100%"},
+            {affect: "padding", value: "0.5rem 1rem"},
+            {affect: "fontSize", value: "1rem"},
+            {affect: "borderThickness", value: "2px"},
+            {affect: "borderStyle", value: "solid"},
+            {affect: "borderColor", value: "black"},
+            {affect: "margin", value: "0.5rem 0"}
+        ]
+    },
+    List: { name: "New List", type: "List",
+        id: "abcd1234",
+        modifiers: [],
+        styles: [],
+        items: []
+    },
+    Bar: { name: "New Bar", type: "Bar",
+        id: "abcd1234",
+        modifiers: [
+            {affect: "barLineThickness", value: "8px"},
+            {affect: "barLineColor", value: "black"},
+            {affect: "barValueText", value: "5"},
+            {affect: "barValueValue", value: "5"},
+            {affect: "barLeftValue", value: "1"},
+            {affect: "barLeftText", value: "Left"},
+            {affect: "barRightValue", value: "10"},
+            {affect: "barRightText", value: "Right"},
+            {affect: "barTextPosition", value: "Top"},
+            {affect: "barLineMargin", value: "8px"}
+        ],
+        styles: [],
+        items: []
+    },
+    Character: { name: "New Character", type: "Character",
+        id: "abcd1234",
+        list: []
+    }
+}
+
+
 const blueprintOptions = [
     "option",
     {icon: "save", text: "Save Story", f: function(){
             if (mcd().getData){
             let bp = mcd().getData();
             storyList[storyList.findIndex(x => x.id === bp.id)] = bp;
-            saveLS()
+            saveLS();
+            toast("Story Saved!")
             }
         }},
     {icon: "move_item", text: "Exit (without saving)", f: function(){
@@ -715,43 +867,15 @@ const blueprintOptions = [
         }},
     "add",
     {icon: "text_format", text: "Text", f: function(){
-            let m = { name: "Text", type: "Text",
-                id: randomID(mcd().list()),
-                modifiers: [
-                    {affect: "textValue", value: "Text Here"}
-                ],
-                styles: [
-                    {affect: "fontSize", value: "32px"}
-                ]
-            }
+            let m = standardModules["Text"]
             mcd().left.addItem(m)
         }},
     {icon: "folder", text: "Group", f: function(){
-            let m = { name: "Group", type: "Group",
-                id: randomID(mcd().list()),
-                modifiers: [],
-                styles: [],
-                items: []
-            }
+            let m = standardModules["Group"]
             mcd().left.addItem(m)
         }},
     {icon: "extension", text: "Module", f: function(){
-            let m = {
-                name: "Module", type: "Module",
-                id: randomID(mcd().list()),
-                modifiers: [
-                    {affect: "moduleType", value: "Input"},
-                    {affect: "type", value: "Text"}
-                ],
-                styles: [
-                    {affect: "width", value: "100%"},
-                    {affect: "padding", value: "0.5rem 1rem"},
-                    {affect: "fontSize", value: "1rem"},
-                    {affect: "borderThickness", value: "2px"},
-                    {affect: "borderStyle", value: "solid"},
-                    {affect: "borderColor", value: "black"}
-                ]
-            }
+            let m = standardModules["Module"]
             mcd().left.addItem(m)
         }}
 ]
@@ -762,7 +886,8 @@ const charSheetOptions = [
             if (mcd().getData){
                 let bp = mcd().getData();
                 storyList[storyList.findIndex(x => x.id === bp.id)] = bp;
-                saveLS()
+                saveLS();
+                toast("Story Saved!")
             }
         }},
     {icon: "move_item", text: "Exit (without saving)", f: function(){
@@ -770,53 +895,47 @@ const charSheetOptions = [
         }},
     "add",
     {icon: "text_format", text: "Text", f: function(){
-            let m = { name: "New Text", type: "Text",
-                id: randomID(mcd().list()),
-                modifiers: [
-                    {affect: "textValue", value: "Text Here"}
-                ],
-                styles: [
-                    {affect: "fontSize", value: "32px"}
-                ]
-            }
+            let m = standardModules["Text"]
             mcd().left.addItem(m)
         }},
     {icon: "folder", text: "Group", f: function(){
-            let m = { name: "New Group", type: "Group",
-                id: randomID(mcd().list()),
-                modifiers: [],
-                styles: [],
-                items: []
-            }
+            let m = standardModules["Group"]
             mcd().left.addItem(m)
         }},
     {icon: "format_list_bulleted", text: "List", f: function(){
-            let m = { name: "New List", type: "List",
-                id: randomID(mcd().list()),
-                modifiers: [],
-                styles: [],
-                items: []
-            }
+            let m = standardModules["List"]
             mcd().left.addItem(m)
     }},
     {icon: "linear_scale", text: "Bar", f: function(){
-            let m = { name: "New Bar", type: "Bar",
-                id: randomID(mcd().list()),
-                modifiers: [
-                    {affect: "barLineThickness", value: "8px"},
-                    {affect: "barLineColor", value: "black"},
-                    {affect: "barValueText", value: "5"},
-                    {affect: "barValueValue", value: "5"},
-                    {affect: "barLeftValue", value: "1"},
-                    {affect: "barLeftText", value: "Left"},
-                    {affect: "barRightValue", value: "10"},
-                    {affect: "barRightText", value: "Right"},
-                    {affect: "barTextPosition", value: "Top"},
-                    {affect: "barLineMargin", value: "8px"}
-                ],
-                styles: [],
-                items: []
+            let m = standardModules["Bar"]
+            mcd().left.addItem(m)
+        }}
+]
+
+const manageCharOptions = [
+    "option",
+    {icon: "save", text: "Save Story", f: function(){
+            if (mcd().getData){
+                let bp = mcd().getData();
+                storyList[storyList.findIndex(x => x.id === bp.id)] = bp;
+                saveLS();
+                toast("Story Saved!")
             }
+        }},
+    {icon: "swap_horiz", text: "Swap View", f: function(){
+            let r = mcd().right;
+            removeChildren(r);
+            mcd().left.refresh()
+            if (mcd().swap === "blueprint"){ mcd().swap = "charsheet";
+            } else { mcd().swap = "blueprint";  }
+            toast("Swapped to: " + mcd().swap.toUpperCase())
+        }},
+    {icon: "move_item", text: "Exit (without saving)", f: function(){
+            mcd().exit()
+        }},
+    "add",
+    {icon: "person", text: "Character", f: function(){
+            let m = standardModules["Character"]
             mcd().left.addItem(m)
         }}
 ]
@@ -828,7 +947,7 @@ const smBtnGroup_obj = [
                 pd("storyManager").openMenuItem("story_info")
             }},
         { icon: "groups", text: "manage characters", f: function(){
-                pd("storyManager").openMenuItem("manage_chars")
+                pd("storyManager").openMenuItem("manage_characters")
             }},
         { icon: "auto_stories", text: "guide", f: function(){
                 pd("storyManager").openMenuItem("guide")
@@ -846,6 +965,7 @@ const smBtnGroup_obj = [
             }}
     ]
 ]
+
 
 const contextMenu = [
     { icon: "move_up", text: "Move Up", f: function(id){
@@ -867,6 +987,14 @@ const contextMenu = [
                 mcd().saveList(o);
                 mcd().refresh()
         }},
+    {icon: "content_copy", text: "Duplicate", f: function(id){
+       let item = duplicateItem(id)
+        let o = mcd().list();
+        let idInd = mcd().getItemLoc(id);
+        o = addItemSibling((idInd.at(-1)+1),idInd.slice(0,-1),item,o,"items")
+            mcd().saveList(o);
+            mcd().refresh();
+    }},
     { icon: "delete", text: "Delete Item", f: function(id){
             mcd().deleteItem(id)
         }, style: "color: red;"}

@@ -6,19 +6,28 @@ function createSheetsDiv(parent,obj,type){
             affect: "blueprint",
             menuOptions: blueprintOptions
         }
-    } else if (type === "charsheet") {
+    }
+    else if (type === "charsheet") {
         ti = {
             id: "charSheetDiv",
             affect: "charsheet",
             menuOptions: charSheetOptions
         }
-    } else {return}
+    }
+    else if (type === "manageChar"){
+        ti = {
+            id: "manageCharDiv",
+            affect: "charList",
+            menuOptions: manageCharOptions
+        }
+    }
+    else {return}
 
     let p = pd(parent);
     let div = append(cre("div"),p); div.id = ti.id;
     div.classList.add("mainSheetDiv")
     div.exit = function(){div.remove();}
-    div.ti = ti;
+    div.ti = ti; div.swap = "blueprint"
     div.dataset.id = obj.id;
 
     let l = append(cre("div","left"),div);
@@ -31,10 +40,11 @@ function createSheetsDiv(parent,obj,type){
         return randomID(lis.list())
     }
     lis.addItem = function(obj){
-        let d = div.getData();
-        d[ti.affect].push(obj);
+        let d = div.getData(); let item = {}; for (key in obj){item[key] = obj[key]}
+        if (item.id === "abcd1234"){item.id = randomID(d[ti.affect]);}
+        d[ti.affect].push(item);
         div.saveData(d);
-        lis.appendChild(bpItemDiv(obj))
+        lis.appendChild(bpItemDiv(item))
         div.preview()
     }
 
@@ -45,26 +55,38 @@ function createSheetsDiv(parent,obj,type){
     let hv = append(createOptionHoverList(ti.menuOptions),lm)
 
     let r = append(cre("div","right"),div);
-    r.refresh = function(){
+    r.refresh = function(list){
         removeChildren(r);
-        r.addItem(div.list())
+        r.addItem(list ? list : div.list())
     }
     r.addItem = function(itemObj,p){
-
-        if (Array.isArray(itemObj)){for (var i=0;i<itemObj.length;i++){r.addItem(itemObj[i])}; return}
+        if (Array.isArray(itemObj)){for (var i=0;i<itemObj.length;i++){r.addItem(itemObj[i]);}; return}
 
         if (itemObj.type === "Module"){
             let type = findOption(itemObj,'modifiers','affect','moduleType');
             if (type){
                 append(window[modList.Module.types[type.value].f](itemObj),p ? p : r);
             }
-        } else {
-            let m = append(window[modList[itemObj.type].f](itemObj),p ? p : r);
-            if (itemObj.type === "Group" && itemObj.items){
-                for (var i=0;i<itemObj.items.length;i++){
-                    r.addItem(itemObj.items[i],m)
-                };
+        } else if (itemObj.type === "Character"){
+            removeChildren(r);
+            r.addItem(div.getData()[div.swap],r);
+            let li = r.getModules(r.childNodes);
+            for (var i=0; i<li.length;i++){
+                let elem = li[i]; let elemObj = elem.dataset.id;
+                let found = itemObj.list.find(x => x.id === elemObj);
+                if (found && elem.setValue){elem.setValue(found.value)}
             }
+            function setFunc(){
+                let lis = r.getModules(r.childNodes).map(x => x={id: x.dataset.id, value: x.getValue()})
+                let char = div.getItemData(itemObj.id);
+                char.list = lis;
+                div.refreshItem(char,char.id)
+            }
+            li.map(x => x.setFunction ? x.setFunction("input", setFunc) : x)
+            li.map(x => x.setFunction ? x.setFunction("click", setFunc) : x)
+        }else {
+            let m = append(window[modList[itemObj.type].f](itemObj),p ? p : r);
+            return m;
         }
     }
     r.getList = function(){
@@ -75,6 +97,21 @@ function createSheetsDiv(parent,obj,type){
             }
         }
         return arr
+    }
+    r.getModules = function(elemList){
+        let arr = [];
+        let ml = elemList;
+        for (var i=0; i<ml.length;i++){
+            if (ml[i].getValue){
+                if (ml[i].classList.contains("cGroup")){
+                    arr = arr.concat(r.getModules(ml[i].childNodes))
+                } else {if (ml[i].classList.contains("moduleContainer")){arr.push(ml[i])}}
+            }
+        }
+        return arr
+    }
+    r.getModulesData = function(){
+        return r.getModules(r.childNodes).map(x => x = {id: x.dataset.id, value: x.getValue()})
     }
 
 
@@ -98,10 +135,13 @@ function createSheetsDiv(parent,obj,type){
         let d = div.getData();
         d[ti.affect] = save_item(id,newItem,div.list(),"items")
         div.saveData(d);
-        div.preview()
+        if (ti.affect !== "charList"){div.preview();}
+    }
+    div.getItemLoc = function(id){
+        return get_index("id",id,div.list(),"items")
     }
     div.findItem = function(id){
-        return div.goTo(get_index("id",id,div.list(),"items"))
+        return div.goTo(div.getItemLoc(id))
     }
     div.getItemData = function(id){
         return getItemFromList(id,div.list())
@@ -111,12 +151,13 @@ function createSheetsDiv(parent,obj,type){
         if (index.length === 1){return Array.from(lis.childNodes)[index[0]]}
         let p = lis;
         for (var i=0; i<index.length; i++){
+            if (p === undefined){break}
             if (p.classList.contains("bpItemDiv") && p.getItem && p.getItem().type === "Group"){
-                p.open();
-                p = p.nextElementSibling;
+                if (!p.isOpen()){p.open();}
+                p = p.nextElementSibling.childNodes[index[i]];
             } else {
                 p = p.childNodes[index[i]];
-                if (p !== undefined && index.length-1 === i && p.getItem && p.getItem().type === "Group"){p.open()}
+                if (p !== undefined && index.length-1 === i && p.getItem && p.getItem().type === "Group"){p.open();}
             }
             // FIX THIS SOMEHOW???
         }
@@ -147,7 +188,8 @@ function createSheetsDiv(parent,obj,type){
 
     div.right = r;
     div.left = lis;
-    div.refresh(obj[ti.affect])
+    if (ti.affect !== "charList"){div.refresh(obj[ti.affect])}
+    else {lis.refresh()}
 
 
     div.ondragover = function(event){event.preventDefault();}
@@ -164,7 +206,7 @@ function mcd(){
 
 
 function bpItemDiv(obj){
-    let div = cre("div","bpItemDiv");
+    let div = cre("button","bpItemDiv");
     let icon = ic(modList[obj.type].icon);
     append(icon,div);
     let name = append(cre("span","bpItemName"),div);
@@ -231,6 +273,25 @@ function bpItemDiv(obj){
             return (div.nextElementSibling && div.nextElementSibling.classList.contains("bpItemDivBody"))
         }
     }
+    if (obj.type === "Character"){
+        name.onclick = function(){
+            if (obj.type !== "Group"){
+            selectElem("selectedCharacter",div)
+
+            let char = mcd().getItemData(obj.id);
+            removeChildren(mcd().right)
+            setCharSheet(obj,mcd().getData()[mcd().swap]);
+        }}
+
+        if (obj.type !== "Group"){
+        div.ondblclick = function(){
+            let ppd = popupcontainer("content","popupCharacterSettings");
+            if (ppd){
+                ppd.saveData(obj.id);
+                popupcontent("charSettings",ppd);
+            }
+        }
+    }}
 
     div.getIndex = function(){
         return get_index("id",obj.id,mcd().list(),"items")

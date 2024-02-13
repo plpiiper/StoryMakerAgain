@@ -39,11 +39,44 @@ function createHomePage(parent){
 
 
 function toast(text){
-    var div = document.getElementById("toast");
-    if (div !== null) {div.remove()}
-    div = document.createElement("div"); document.getElementById("content").appendChild(div); div.id = "toast";
+    let div = pd("toast");   if (div !== null) {div.remove()}
+    div = append(cre("div"),"content"); div.id = "toast";
 
     div.innerText = text;
     setTimeout(function(){   div.classList.add("visible");   },100)
     setTimeout(function(){   div.classList.toggle("visible");   },3000)
+}
+
+function confirmWith(text,f,param){
+    let div = append(cre("div","confirmDiv"),coverDiv("content"));
+        let tx = append(cre("span","confirmText"),div); tx.innerText = text;
+        let btnDiv = append(cre("div","confirmBtnDiv"),div);
+            let y = append(cre("button","confirmBtn confirmYes"),btnDiv);
+                y.innerText = "Yes";
+                y.onclick = function(){f(param); n.click()};
+            let n = append(cre("button","confirmBtn confirmNo"),btnDiv);
+                n.innerText = "No";
+                n.onclick = function(){div.parentNode.remove();}
+}
+
+function duplicateItem(id){
+    let item = mcd().getItemData(id); item.id = randomID(mcd().list());
+    if (item.type === "Group"){
+         for (var i=0; i<item.items.length; i++){
+            item.items[i] = duplicateItem(item.items[i].id)
+        }
+    }
+return item
+}
+
+function getItemIDList(array,key){
+    let lis = [];
+
+    for (var i=0; i<array.length; i++){
+        if (array[i].type === "Group"){
+            lis.push(array[i].id);
+            lis = lis.concat(getItemIDList(array[i][key],key))
+        } else {lis.push(array[i].id)}
+    }
+    return lis
 }

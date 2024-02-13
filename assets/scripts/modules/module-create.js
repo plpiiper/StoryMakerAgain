@@ -39,7 +39,7 @@ if (obj.id){div.dataset.id = obj.id}
         let slct = append(cre("div","dpSelected"), top);
         // console.log(obj)
         let allow = obj.modifiers.find(x => x.affect === "allow");
-        if (allow){
+        if (allow && allow.value === "true"){
             let inp = append(cInput({
                 type: "Module", styles: [],
                 modifiers: [
@@ -53,12 +53,14 @@ if (obj.id){div.dataset.id = obj.id}
             let inpBtn = append(cre("button","dpBtn"),top);
                 append(ic("add_circle"),inpBtn)
                 inpBtn.onclick = function(value){
-                    if (value || inp.getValue().replaceAll(" ","").length > 0){
+                    if ((value && value !== event) || inp.getValue().replaceAll(" ","").length > 0){
                     dp.addOption(typeof value === "string" ? value : inp.getValue(),"top");
                     inp.valueDiv.value = ""
                 }}
             div.inputDiv = inp; dp.inputDiv = inp;
             div.inputBtn = inpBtn; dp.inputBtn = inpBtn;
+        div.setInputWidth = function(value){inp.style.width = value;}
+        dp.setInputWidth = div.setInputWidth;
         }
     let bot = append(cre("div","dpBot"), dp);
 
@@ -120,6 +122,7 @@ div.setFunction = function(type,f){
 }
 div.pickOption = function(name){
     if (allow){
+        if (typeof name === "string"){name = [name]}
         for (var i=0; i<name.length; i++){div.inputBtn.onclick(name[i])}
         return
     }
@@ -131,6 +134,7 @@ div.pickOption = function(name){
         }
     }
 }
+div.setValue = div.pickOption;
 
      dp.setInsetText = div.setInsetText;
      dp.setInsetPos = div.setInsetPos;
@@ -227,7 +231,7 @@ function cText(obj){
     }
 
 
-
+    div.setValue = div.setText;
     setModuleOptions(div,obj)
     return div
 }
@@ -236,8 +240,11 @@ function cText(obj){
 function cGroup(obj){
     let div = cre("div","cGroup");
         div.dataset.id = obj.id;
-    div.setAlignment = function(value){
+    div.setAlignmentV = function(value){
         div.style.justifyContent = value;
+    }
+    div.setAlignmentH = function(value){
+        div.style.alignItems = value;
     }
     div.setArrangement = function(value){
         div.style.display = "flex";
@@ -248,6 +255,13 @@ function cGroup(obj){
         Array.from(div.childNodes).filter(x => x.getValue && (x.classList.contains("moduleContainer") || x.classList.contains("cGroup"))).map(x =>arr = arr.concat(x.getValue()));
         return arr
     }
+
+    if (obj.items && obj.items.length > 0){
+        for (var i=0; i<obj.items.length;i++){
+            append(cCreate(obj.items[i]),div)
+        }
+    }
+
     setModuleOptions(div,obj)
     return div
 }
@@ -280,3 +294,33 @@ function cContainer(){
     return div
 }
 
+
+function cTextarea(obj){
+    let e = cContainer()
+    if (obj.id){e.dataset.id = obj.id}
+    let div = append(cre("textarea","cTextarea"),e);
+        div.setText = function(tx){
+            div.value = tx;
+        }
+        div.getValue = function(){  return div.value;  };
+            e.getValue = div.getValue;
+        div.setResize = function(option){
+            if (option === "Both"){   div.style.resize = "both";   }
+            if (option === "None"){   div.style.resize = "none";   }
+            if (option === "Vertical"){   div.style.resize = "vertical";   }
+            if (option === "Horizontal"){   div.style.resize = "horizontal";   }
+        }
+    div.setFunction = function(type,f){
+        div.addEventListener(type,f);
+    }; e.setFunction = div.setFunction;
+
+
+    e.setValue = div.setText;
+    div.setInsetText = e.setInsetText;
+    div.setInsetPos = e.setInsetPos;
+    div.setInsetPosVertical = e.setInsetPosVertical;
+    div.setInsetPosHorizontal = e.setInsetPosHorizontal;
+    setModuleOptions(div,obj)
+    return e
+
+}
